@@ -1,0 +1,5 @@
+session.json
+device.json
+venv/
+__pycache__/
+nohup.out
