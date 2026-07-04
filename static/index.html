@@ -160,6 +160,8 @@
         }
         .user-item .user-info {
             overflow: hidden;
+            flex: 1;
+            min-width: 0;
         }
         .user-item .user-info .uname {
             font-size: 14px;
@@ -172,6 +174,23 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+        .user-item .item-actions {
+            display: flex;
+            gap: 4px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .user-item .item-actions button {
+            width: auto;
+            padding: 4px 8px;
+            font-size: 11px;
+            margin-top: 0;
+            border-radius: 4px;
+        }
+        .user-item .item-actions button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         /* List view styles */
         .list-container {
@@ -584,6 +603,7 @@
             users.forEach(function(u) {
                 const div = document.createElement("div");
                 div.className = "user-item";
+                div.dataset.userid = u.user_id;
                 div.dataset.username = u.username.toLowerCase();
                 div.dataset.fullname = (u.full_name || "").toLowerCase();
 
@@ -607,8 +627,87 @@
                 info.appendChild(fname);
 
                 div.appendChild(info);
+
+                const actions = document.createElement("div");
+                actions.className = "item-actions";
+
+                const unfBtn = document.createElement("button");
+                unfBtn.className = "unfollow-btn";
+                unfBtn.textContent = "언팔";
+                unfBtn.onclick = function() { doSingleUnfollow(u.user_id, u.username, div, unfBtn); };
+                actions.appendChild(unfBtn);
+
+                const blkBtn = document.createElement("button");
+                blkBtn.className = "block-btn";
+                blkBtn.textContent = "차단";
+                blkBtn.onclick = function() { doSingleBlock(u.user_id, u.username, div, blkBtn); };
+                actions.appendChild(blkBtn);
+
+                div.appendChild(actions);
                 userList.appendChild(div);
             });
+        }
+
+        async function doSingleUnfollow(userId, username, rowEl, btn) {
+            if (!confirm(`@${username}을(를) 언팔로우하시겠습니까?`)) return;
+            btn.disabled = true;
+            btn.textContent = "...";
+            try {
+                const res = await fetch("/api/bulk-unfollow", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({user_ids: [userId]}),
+                });
+                const data = await res.json();
+                if (data.status === "ok" && data.success > 0) {
+                    rowEl.remove();
+                    fetchedUsers = fetchedUsers.filter(u => u.user_id !== userId);
+                    document.getElementById("list-result-count").textContent =
+                        "맞팔이 아닌 유저: " + fetchedUsers.length + "명";
+                } else if (data.status === "login_required") {
+                    showView(loginView);
+                    showError("login-error", data.message);
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = "언팔";
+                    alert("언팔로우 실패");
+                }
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = "언팔";
+                alert("네트워크 오류가 발생했습니다.");
+            }
+        }
+
+        async function doSingleBlock(userId, username, rowEl, btn) {
+            if (!confirm(`@${username}을(를) 차단하시겠습니까?`)) return;
+            btn.disabled = true;
+            btn.textContent = "...";
+            try {
+                const res = await fetch("/api/bulk-block", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({user_ids: [userId]}),
+                });
+                const data = await res.json();
+                if (data.status === "ok" && data.success > 0) {
+                    rowEl.remove();
+                    fetchedUsers = fetchedUsers.filter(u => u.user_id !== userId);
+                    document.getElementById("list-result-count").textContent =
+                        "맞팔이 아닌 유저: " + fetchedUsers.length + "명";
+                } else if (data.status === "login_required") {
+                    showView(loginView);
+                    showError("login-error", data.message);
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = "차단";
+                    alert("차단 실패");
+                }
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = "차단";
+                alert("네트워크 오류가 발생했습니다.");
+            }
         }
 
         function filterList() {
