@@ -293,6 +293,66 @@ def fetch_non_followers() -> dict:
         return {"status": "error", "message": str(e)}
 
 
+def bulk_unfollow(user_ids: list) -> dict:
+    """주어진 user_id 목록을 일괄 언팔로우."""
+    if not app_state["logged_in"]:
+        return {"status": "login_required", "message": "로그인이 필요합니다."}
+    try:
+        app_state["job_status"] = "unfollowing"
+        success = 0
+        failed = 0
+        for uid in user_ids:
+            try:
+                cl.user_unfollow(int(uid))
+                success += 1
+            except Exception as e:
+                logger.warning("Unfollow failed for %s: %s", uid, e)
+                failed += 1
+            time.sleep(random.uniform(1, 3))
+        app_state["job_status"] = "idle"
+        return {"status": "ok", "success": success, "failed": failed}
+    except (LoginRequired, PleaseWaitFewMinutes) as e:
+        app_state["job_status"] = "idle"
+        app_state["logged_in"] = False
+        if os.path.exists(SESSION_FILE):
+            os.remove(SESSION_FILE)
+        return {"status": "login_required", "message": "세션이 만료되었습니다. 다시 로그인해주세요."}
+    except Exception as e:
+        app_state["job_status"] = "idle"
+        logger.exception("bulk_unfollow failed")
+        return {"status": "error", "message": str(e)}
+
+
+def bulk_block(user_ids: list) -> dict:
+    """주어진 user_id 목록을 일괄 차단."""
+    if not app_state["logged_in"]:
+        return {"status": "login_required", "message": "로그인이 필요합니다."}
+    try:
+        app_state["job_status"] = "blocking"
+        success = 0
+        failed = 0
+        for uid in user_ids:
+            try:
+                cl.user_block(int(uid))
+                success += 1
+            except Exception as e:
+                logger.warning("Block failed for %s: %s", uid, e)
+                failed += 1
+            time.sleep(random.uniform(1, 3))
+        app_state["job_status"] = "idle"
+        return {"status": "ok", "success": success, "failed": failed}
+    except (LoginRequired, PleaseWaitFewMinutes) as e:
+        app_state["job_status"] = "idle"
+        app_state["logged_in"] = False
+        if os.path.exists(SESSION_FILE):
+            os.remove(SESSION_FILE)
+        return {"status": "login_required", "message": "세션이 만료되었습니다. 다시 로그인해주세요."}
+    except Exception as e:
+        app_state["job_status"] = "idle"
+        logger.exception("bulk_block failed")
+        return {"status": "error", "message": str(e)}
+
+
 def logout():
     """Remove session file and reset state."""
     global _two_factor_info

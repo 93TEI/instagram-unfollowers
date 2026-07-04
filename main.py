@@ -10,6 +10,8 @@ from pydantic import BaseModel
 from instagram import fetch_non_followers as ig_fetch_non_followers
 from instagram import login as ig_login
 from instagram import logout as ig_logout
+from instagram import bulk_unfollow as ig_bulk_unfollow
+from instagram import bulk_block as ig_bulk_block
 from instagram import try_resume_session, verify_2fa as ig_verify_2fa
 from state import app_state
 
@@ -41,6 +43,10 @@ class LoginRequest(BaseModel):
 
 class VerifyRequest(BaseModel):
     code: str
+
+
+class BulkActionRequest(BaseModel):
+    user_ids: list
 
 
 @app.get("/")
@@ -83,6 +89,18 @@ async def api_progress():
 @app.post("/api/fetch")
 async def api_fetch():
     result = await asyncio.to_thread(ig_fetch_non_followers)
+    return result
+
+
+@app.post("/api/bulk-unfollow")
+async def api_bulk_unfollow(req: BulkActionRequest):
+    result = await asyncio.to_thread(ig_bulk_unfollow, req.user_ids)
+    return result
+
+
+@app.post("/api/bulk-block")
+async def api_bulk_block(req: BulkActionRequest):
+    result = await asyncio.to_thread(ig_bulk_block, req.user_ids)
     return result
 
 

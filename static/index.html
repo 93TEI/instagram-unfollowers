@@ -220,6 +220,89 @@
             max-height: none;
             overflow-y: visible;
         }
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        .toolbar input[type="text"] {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #dbdbdb;
+            border-radius: 6px;
+            font-size: 13px;
+            background: #fafafa;
+        }
+        .toolbar button {
+            width: auto;
+            padding: 10px 14px;
+            font-size: 12px;
+            margin-top: 0;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .unfollow-btn {
+            background: #e67e22 !important;
+        }
+        .unfollow-btn:hover {
+            background: #d35400 !important;
+        }
+        .block-btn {
+            background: #ed4956 !important;
+        }
+        .block-btn:hover {
+            background: #c13543 !important;
+        }
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px 24px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+        }
+        .modal-box p {
+            font-size: 15px;
+            color: #262626;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modal-buttons button {
+            width: auto;
+            padding: 10px 24px;
+            font-size: 14px;
+            border-radius: 6px;
+            margin-top: 0;
+        }
+        .modal-buttons .modal-cancel {
+            background: #dbdbdb;
+            color: #262626;
+        }
+        .modal-buttons .modal-cancel:hover {
+            background: #c7c7c7;
+        }
     </style>
 </head>
 <body>
@@ -275,6 +358,11 @@
         <!-- List View -->
         <div id="list-view" class="hidden list-view">
             <button class="back-btn" onclick="goBack()">&larr; 돌아가기</button>
+            <div id="list-toolbar" class="toolbar hidden">
+                <input type="text" id="search-input" placeholder="아이디 또는 이름 검색" oninput="filterList()">
+                <button class="unfollow-btn" onclick="confirmUnfollow()">언팔로우</button>
+                <button class="block-btn" onclick="confirmBlock()">차단</button>
+            </div>
             <div id="list-progress" class="progress-area">
                 <div class="spinner-lg"></div>
                 <p class="progress-text" id="progress-text">조회 준비 중...</p>
@@ -287,6 +375,17 @@
         </div>
     </div>
 
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-box">
+            <p id="modal-message"></p>
+            <div class="modal-buttons">
+                <button class="modal-cancel" onclick="closeModal()">아니오</button>
+                <button id="modal-confirm-btn" onclick="modalConfirm()">예</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const loginView = document.getElementById("login-view");
         const twofaView = document.getElementById("twofa-view");
@@ -294,6 +393,8 @@
         const listView = document.getElementById("list-view");
 
         let progressInterval = null;
+        let fetchedUsers = [];
+        let modalAction = null;
 
         // Check status on load
         async function checkStatus() {
@@ -477,13 +578,152 @@
             }
         }
 
+        function renderUserList(users) {
+            const userList = document.getElementById("list-user-list");
+            userList.textContent = "";
+            users.forEach(function(u) {
+                const div = document.createElement("div");
+                div.className = "user-item";
+                div.dataset.username = u.username.toLowerCase();
+                div.dataset.fullname = (u.full_name || "").toLowerCase();
+
+                const img = document.createElement("img");
+                img.src = u.profile_pic_url;
+                img.alt = "";
+                img.referrerPolicy = "no-referrer";
+                div.appendChild(img);
+
+                const info = document.createElement("div");
+                info.className = "user-info";
+
+                const uname = document.createElement("div");
+                uname.className = "uname";
+                uname.textContent = "@" + u.username;
+                info.appendChild(uname);
+
+                const fname = document.createElement("div");
+                fname.className = "fname";
+                fname.textContent = u.full_name || "";
+                info.appendChild(fname);
+
+                div.appendChild(info);
+                userList.appendChild(div);
+            });
+        }
+
+        function filterList() {
+            const query = document.getElementById("search-input").value.trim().toLowerCase();
+            const items = document.querySelectorAll("#list-user-list .user-item");
+            items.forEach(function(item) {
+                const uname = item.dataset.username;
+                const fname = item.dataset.fullname;
+                if (!query || uname.includes(query) || fname.includes(query)) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        function confirmUnfollow() {
+            modalAction = "unfollow";
+            document.getElementById("modal-message").textContent = "일괄 언팔하시겠습니까?";
+            document.getElementById("modal-confirm-btn").className = "unfollow-btn";
+            document.getElementById("confirm-modal").classList.add("active");
+        }
+
+        function confirmBlock() {
+            modalAction = "block";
+            document.getElementById("modal-message").textContent = "일괄 차단하시겠습니까?";
+            document.getElementById("modal-confirm-btn").className = "block-btn";
+            document.getElementById("confirm-modal").classList.add("active");
+        }
+
+        function closeModal() {
+            modalAction = null;
+            document.getElementById("confirm-modal").classList.remove("active");
+        }
+
+        async function modalConfirm() {
+            closeModal();
+            if (!fetchedUsers.length) return;
+
+            const userIds = fetchedUsers.map(u => u.user_id);
+            const toolbar = document.getElementById("list-toolbar");
+            const progressArea = document.getElementById("list-progress");
+            const progressText = document.getElementById("progress-text");
+
+            if (modalAction === "unfollow") {
+                toolbar.classList.add("hidden");
+                progressArea.classList.remove("hidden");
+                progressText.textContent = `언팔로우 진행 중... (${userIds.length}명)`;
+                try {
+                    const res = await fetch("/api/bulk-unfollow", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({user_ids: userIds}),
+                    });
+                    const data = await res.json();
+                    progressArea.classList.add("hidden");
+                    if (data.status === "ok") {
+                        alert(`언팔로우 완료: 성공 ${data.success}명, 실패 ${data.failed}명`);
+                        fetchedUsers = [];
+                        document.getElementById("list-result").classList.add("hidden");
+                        toolbar.classList.add("hidden");
+                    } else if (data.status === "login_required") {
+                        showView(loginView);
+                        showError("login-error", data.message);
+                    } else {
+                        showError("list-error", data.message || "언팔로우 실패");
+                        toolbar.classList.remove("hidden");
+                    }
+                } catch (e) {
+                    progressArea.classList.add("hidden");
+                    toolbar.classList.remove("hidden");
+                    showError("list-error", "네트워크 오류가 발생했습니다.");
+                }
+            } else if (modalAction === "block") {
+                toolbar.classList.add("hidden");
+                progressArea.classList.remove("hidden");
+                progressText.textContent = `차단 진행 중... (${userIds.length}명)`;
+                try {
+                    const res = await fetch("/api/bulk-block", {
+                        method: "POST",
+                        headers: {"Content-Type": "application/json"},
+                        body: JSON.stringify({user_ids: userIds}),
+                    });
+                    const data = await res.json();
+                    progressArea.classList.add("hidden");
+                    if (data.status === "ok") {
+                        alert(`차단 완료: 성공 ${data.success}명, 실패 ${data.failed}명`);
+                        fetchedUsers = [];
+                        document.getElementById("list-result").classList.add("hidden");
+                        toolbar.classList.add("hidden");
+                    } else if (data.status === "login_required") {
+                        showView(loginView);
+                        showError("login-error", data.message);
+                    } else {
+                        showError("list-error", data.message || "차단 실패");
+                        toolbar.classList.remove("hidden");
+                    }
+                } catch (e) {
+                    progressArea.classList.add("hidden");
+                    toolbar.classList.remove("hidden");
+                    showError("list-error", "네트워크 오류가 발생했습니다.");
+                }
+            }
+            modalAction = null;
+        }
+
         async function doFetch() {
             // Switch to list view
             showView(listView);
             document.getElementById("list-progress").classList.remove("hidden");
             document.getElementById("list-result").classList.add("hidden");
+            document.getElementById("list-toolbar").classList.add("hidden");
             hideError("list-error");
             document.getElementById("progress-text").textContent = "조회 준비 중...";
+            document.getElementById("search-input").value = "";
 
             // Start polling progress
             progressInterval = setInterval(pollProgress, 1000);
@@ -497,38 +737,13 @@
                 progressInterval = null;
 
                 if (data.status === "ok") {
+                    fetchedUsers = data.users;
                     document.getElementById("list-progress").classList.add("hidden");
                     document.getElementById("list-result-count").textContent =
                         "맞팔이 아닌 유저: " + data.count + "명";
-                    const userList = document.getElementById("list-user-list");
-                    userList.textContent = "";
-                    data.users.forEach(function(u) {
-                        const div = document.createElement("div");
-                        div.className = "user-item";
-
-                        const img = document.createElement("img");
-                        img.src = u.profile_pic_url;
-                        img.alt = "";
-                        img.referrerPolicy = "no-referrer";
-                        div.appendChild(img);
-
-                        const info = document.createElement("div");
-                        info.className = "user-info";
-
-                        const uname = document.createElement("div");
-                        uname.className = "uname";
-                        uname.textContent = "@" + u.username;
-                        info.appendChild(uname);
-
-                        const fname = document.createElement("div");
-                        fname.className = "fname";
-                        fname.textContent = u.full_name || "";
-                        info.appendChild(fname);
-
-                        div.appendChild(info);
-                        userList.appendChild(div);
-                    });
+                    renderUserList(data.users);
                     document.getElementById("list-result").classList.remove("hidden");
+                    document.getElementById("list-toolbar").classList.remove("hidden");
                 } else if (data.status === "login_required") {
                     showView(loginView);
                     showError("login-error", data.message);
