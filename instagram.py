@@ -298,6 +298,7 @@ def bulk_unfollow(user_ids: list) -> dict:
     if not app_state["logged_in"]:
         return {"status": "login_required", "message": "로그인이 필요합니다."}
     try:
+        _ensure_private_api()
         app_state["job_status"] = "unfollowing"
         success = 0
         failed = 0
@@ -328,6 +329,7 @@ def bulk_block(user_ids: list) -> dict:
     if not app_state["logged_in"]:
         return {"status": "login_required", "message": "로그인이 필요합니다."}
     try:
+        _ensure_private_api()
         app_state["job_status"] = "blocking"
         success = 0
         failed = 0
