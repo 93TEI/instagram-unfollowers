@@ -299,17 +299,20 @@ def bulk_unfollow(user_ids: list) -> dict:
         return {"status": "login_required", "message": "로그인이 필요합니다."}
     try:
         app_state["job_status"] = "unfollowing"
+        app_state["bulk_progress"] = {"done": 0, "total": len(user_ids)}
         success = 0
         failed = 0
         for uid in user_ids:
             try:
-                cl.user_unfollow(int(uid))
+                cl.user_unfollow(str(uid))
                 success += 1
             except Exception as e:
                 logger.warning("Unfollow failed for %s: %s", uid, e)
                 failed += 1
+            app_state["bulk_progress"]["done"] = success + failed
             time.sleep(random.uniform(1, 3))
         app_state["job_status"] = "idle"
+        app_state["bulk_progress"] = {"done": 0, "total": 0}
         return {"status": "ok", "success": success, "failed": failed}
     except (LoginRequired, PleaseWaitFewMinutes) as e:
         app_state["job_status"] = "idle"
@@ -329,17 +332,30 @@ def bulk_block(user_ids: list) -> dict:
         return {"status": "login_required", "message": "로그인이 필요합니다."}
     try:
         app_state["job_status"] = "blocking"
+        app_state["bulk_progress"] = {"done": 0, "total": len(user_ids)}
         success = 0
         failed = 0
         for uid in user_ids:
             try:
-                cl.user_block(int(uid))
-                success += 1
+                data = {
+                    "surface": "profile",
+                    "is_auto_block_enabled": "true",
+                    "user_id": str(uid),
+                    "_uid": cl.user_id,
+                    "_uuid": cl.uuid,
+                }
+                result = cl.private_request(f"friendships/block/{uid}/", data)
+                if result.get("friendship_status", {}).get("blocking"):
+                    success += 1
+                else:
+                    failed += 1
             except Exception as e:
                 logger.warning("Block failed for %s: %s", uid, e)
                 failed += 1
+            app_state["bulk_progress"]["done"] = success + failed
             time.sleep(random.uniform(1, 3))
         app_state["job_status"] = "idle"
+        app_state["bulk_progress"] = {"done": 0, "total": 0}
         return {"status": "ok", "success": success, "failed": failed}
     except (LoginRequired, PleaseWaitFewMinutes) as e:
         app_state["job_status"] = "idle"

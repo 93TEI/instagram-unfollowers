@@ -379,8 +379,8 @@
             <button class="back-btn" onclick="goBack()">&larr; 돌아가기</button>
             <div id="list-toolbar" class="toolbar hidden">
                 <input type="text" id="search-input" placeholder="아이디 또는 이름 검색" oninput="filterList()">
-                <button class="unfollow-btn" onclick="confirmUnfollow()">언팔로우</button>
-                <button class="block-btn" onclick="confirmBlock()">차단</button>
+                <button class="unfollow-btn" onclick="confirmUnfollow()">일괄 언팔로우</button>
+                <button class="block-btn" onclick="confirmBlock()">일괄 차단</button>
             </div>
             <div id="list-progress" class="progress-area">
                 <div class="spinner-lg"></div>
@@ -744,6 +744,7 @@
         }
 
         async function modalConfirm() {
+            const action = modalAction;
             closeModal();
             if (!fetchedUsers.length) return;
 
@@ -752,66 +753,50 @@
             const progressArea = document.getElementById("list-progress");
             const progressText = document.getElementById("progress-text");
 
-            if (modalAction === "unfollow") {
-                toolbar.classList.add("hidden");
-                progressArea.classList.remove("hidden");
-                progressText.textContent = `언팔로우 진행 중... (${userIds.length}명)`;
+            const label = action === "unfollow" ? "언팔로우" : "차단";
+            const endpoint = action === "unfollow" ? "/api/bulk-unfollow" : "/api/bulk-block";
+
+            toolbar.classList.add("hidden");
+            progressArea.classList.remove("hidden");
+            progressText.textContent = `${label} 진행 중... (0/${userIds.length}명)`;
+
+            const bulkInterval = setInterval(async () => {
                 try {
-                    const res = await fetch("/api/bulk-unfollow", {
-                        method: "POST",
-                        headers: {"Content-Type": "application/json"},
-                        body: JSON.stringify({user_ids: userIds}),
-                    });
-                    const data = await res.json();
-                    progressArea.classList.add("hidden");
-                    if (data.status === "ok") {
-                        alert(`언팔로우 완료: 성공 ${data.success}명, 실패 ${data.failed}명`);
-                        fetchedUsers = [];
-                        document.getElementById("list-result").classList.add("hidden");
-                        toolbar.classList.add("hidden");
-                    } else if (data.status === "login_required") {
-                        showView(loginView);
-                        showError("login-error", data.message);
-                    } else {
-                        showError("list-error", data.message || "언팔로우 실패");
-                        toolbar.classList.remove("hidden");
+                    const r = await fetch("/api/bulk-progress");
+                    const p = await r.json();
+                    if (p.total > 0) {
+                        progressText.textContent = `${label} 진행 중... (${p.done}/${p.total}명)`;
                     }
-                } catch (e) {
-                    progressArea.classList.add("hidden");
+                } catch (e) {}
+            }, 1000);
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({user_ids: userIds}),
+                });
+                clearInterval(bulkInterval);
+                const data = await res.json();
+                progressArea.classList.add("hidden");
+                if (data.status === "ok") {
+                    alert(`${label} 완료: 성공 ${data.success}명, 실패 ${data.failed}명`);
+                    fetchedUsers = [];
+                    document.getElementById("list-result").classList.add("hidden");
+                    toolbar.classList.add("hidden");
+                } else if (data.status === "login_required") {
+                    showView(loginView);
+                    showError("login-error", data.message);
+                } else {
+                    showError("list-error", data.message || `${label} 실패`);
                     toolbar.classList.remove("hidden");
-                    showError("list-error", "네트워크 오류가 발생했습니다.");
                 }
-            } else if (modalAction === "block") {
-                toolbar.classList.add("hidden");
-                progressArea.classList.remove("hidden");
-                progressText.textContent = `차단 진행 중... (${userIds.length}명)`;
-                try {
-                    const res = await fetch("/api/bulk-block", {
-                        method: "POST",
-                        headers: {"Content-Type": "application/json"},
-                        body: JSON.stringify({user_ids: userIds}),
-                    });
-                    const data = await res.json();
-                    progressArea.classList.add("hidden");
-                    if (data.status === "ok") {
-                        alert(`차단 완료: 성공 ${data.success}명, 실패 ${data.failed}명`);
-                        fetchedUsers = [];
-                        document.getElementById("list-result").classList.add("hidden");
-                        toolbar.classList.add("hidden");
-                    } else if (data.status === "login_required") {
-                        showView(loginView);
-                        showError("login-error", data.message);
-                    } else {
-                        showError("list-error", data.message || "차단 실패");
-                        toolbar.classList.remove("hidden");
-                    }
-                } catch (e) {
-                    progressArea.classList.add("hidden");
-                    toolbar.classList.remove("hidden");
-                    showError("list-error", "네트워크 오류가 발생했습니다.");
-                }
+            } catch (e) {
+                clearInterval(bulkInterval);
+                progressArea.classList.add("hidden");
+                toolbar.classList.remove("hidden");
+                showError("list-error", "네트워크 오류가 발생했습니다.");
             }
-            modalAction = null;
         }
 
         async function doFetch() {

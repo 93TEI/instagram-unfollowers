@@ -46,7 +46,7 @@ class VerifyRequest(BaseModel):
 
 
 class BulkActionRequest(BaseModel):
-    user_ids: list
+    user_ids: list[str]
 
 
 @app.get("/")
@@ -84,6 +84,11 @@ async def api_progress():
         "fetched": app_state["fetch_progress"]["fetched"],
         "total": app_state["fetch_progress"]["total"],
     }
+
+
+@app.get("/api/bulk-progress")
+async def api_bulk_progress():
+    return app_state["bulk_progress"]
 
 
 @app.post("/api/fetch")
