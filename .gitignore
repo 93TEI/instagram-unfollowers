@@ -5,3 +5,4 @@ followers_progress.json
 venv/
 __pycache__/
 nohup.out
+server.log
