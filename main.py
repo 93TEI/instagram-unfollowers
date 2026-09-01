@@ -13,7 +13,7 @@ from instagram import logout as ig_logout
 from instagram import bulk_unfollow as ig_bulk_unfollow
 from instagram import bulk_block as ig_bulk_block
 from instagram import try_resume_session, verify_2fa as ig_verify_2fa
-from state import app_state
+from state import app_state, cooldown_remaining, load_cooldown
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Try to resume existing session on startup."""
+    # 쿨다운을 먼저 복원한다. 서버 재시작으로 요청 예산 제한이 초기화되면 안 된다.
+    load_cooldown()
     logger.info("Attempting session resume...")
     resumed = try_resume_session()
     if resumed:
@@ -73,6 +75,8 @@ async def api_status():
         "username": app_state["username"],
         "job_status": app_state["job_status"],
         "error": app_state["error"],
+        "cooldown_remaining": cooldown_remaining(),
+        "cooldown_reason": app_state["cooldown_reason"],
     }
 
 
@@ -87,8 +91,9 @@ async def api_progress():
 
 
 @app.post("/api/fetch")
-async def api_fetch():
-    result = await asyncio.to_thread(ig_fetch_non_followers)
+async def api_fetch(dry_run: bool = False):
+    """dry_run=true면 팔로잉/팔로워 각 1페이지만 호출한다 (세션확인/user_info 포함 요청 약 4회)."""
+    result = await asyncio.to_thread(ig_fetch_non_followers, dry_run)
     return result
 
 
