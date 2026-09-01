@@ -1,0 +1,986 @@
+/Users/tei/instagram-unfollowers/venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+INFO:     Started server process [70926]
+INFO:     Waiting for application startup.
+INFO:state:cooldown_loaded remaining_sec=17359 reason=fetch_completed
+INFO:main:Attempting session resume...
+INFO:instagram:session_loaded username=None verified=false
+INFO:main:Session resumed successfully for @None
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:56841 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56848 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/accounts/current_user/?edit=true
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/accounts/current_user/?edit=true (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:private_api_check ok=true
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:public_request:[None] [400] GET https://www.instagram.com/graphql/query/?variables=%7B%22user_id%22%3A%2244815589529%22%2C%22include_reel%22%3Atrue%7D&query_hash=ad99dd9d3646cc3c0dda65debcd266a7
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:public_request:[None] [200] POST https://www.instagram.com/api/graphql
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/users/44815589529/info/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/users/44815589529/info/?is_prefetch=false&entry_point=self_profile&from_module=self_profile&is_app_start=False (364.0.0.35.86, OnePlus 6T Dev)
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=1 returned=200 new=200 total=200 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=200 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=2 returned=200 new=200 total=400 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=400 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=3 returned=200 new=200 total=600 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=600 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=4 returned=200 new=200 total=800 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=800 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=5 returned=189 new=188 total=988 has_cursor=False
+INFO:instagram:following_fetched pages=5 users=988 exhausted=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=1 returned=9 new=9 total=9 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEU0VoNWRXNTFnYjREQS1ZcFlLNnZoaDBYQUJpZlBxVTd3V0lpWkpTc0Y5akNmTEhyS2hNVHY5Wmc3NGdyM1MtR2Z0WlkzcEYyMTNmcGRiXzFhT3NnZw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=2 returned=18 new=18 total=27 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBZHJ6V3RBbFFJSzJMSWVsTjZ3Wm5tbGJrRE9uNFlYUWtRcXhCYW5CUmx3d3hpYkI2VjFadTNjYkdqRzNkTTJ1VWhuQm9TS2xOYjZNLUhJTkZ2UmU0aw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=3 returned=20 new=20 total=47 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCZm1ha2t5dFlXUzdYeHBmV3ZkMzY3RC1YMm5lRWVDbmUxVDg1OE5lcnhBZFg5ZUxDTkxIZUNvWHZxbzk3a3BBV1psNWtiR1lvT0lkbFExbncyTVdtVw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=4 returned=23 new=23 total=70 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBMGF2THp0Z29CZFkzTXkxMXhmYXlfN1hpMEZrNHgxUl94dkc4dE9zdkx4OGZiXzBOYm5lV0lSd3ZiNHEySVR1a2Rkc1cyV040bnZ5dDVVbXJ4amNfbA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=5 returned=23 new=23 total=93 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFDVGc4RmRTUTRIamczYnl0YTMwY2wwN2VMQVNCRW03TDRuLVE3YlYybDhqT3NvNFhhVDJfUkdrTGg3R3Jral82N1k0LXZLU1UyM3ZNbkhPUk1rMDZyUw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=6 returned=21 new=21 total=114 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCR1ZsMUxqM2pDc01yWXlvTlRFUHRYbUpSamZzQkJBWHNBWmNlanhVd042Z3ZNdXZzUmlVc19ZT2k0d3hWZEdyTUpKYTgxWjNZdGJ2WWtKMk1PNVJ5Mg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=7 returned=22 new=22 total=136 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEQ2V6YUxLYWRuSW12TDRwVDlKaW9NZVNpYkZab2lINm1IcDZkMWxIYWhCVFUzb1g2S1JVbG90RE9ObGdZSF8xdTFncTdLTmd5bWlNN0VnN1lqa2oxcw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=8 returned=21 new=21 total=157 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEdHBkMlJicjkzSk5FakZSNGhzQXZacXpYR01ua2xwLU1HNUdTNEtHRDRRZmFEYmtEakJENjU1X3FaSXNlYjhkdW9JNzJ5aFpOX1BGZWFzT0NsU1E3Ng%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=9 returned=22 new=22 total=179 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCZnlLMkphTTFBeFNuVkwtOFF4RnE5LWxyVGRORG5wcE1uTzVwNUdXQUFZR2VBSmRoaGVDdGxmN3gwYU1wUER0UXp4aDVlUXEzN2FhUVN2U0lfREFLaA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=10 returned=23 new=23 total=202 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBRXJxTEJ4dV9WNlh2NkUxTWN3MlBOZDkwc3ZFTW1tVUVSZU44a0tGWWlGT0hNcDZsQ0xYWE5BblJHcVBRMUVfclJvNUtYY0FUVWh1NXNiLWtFNFppTg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=11 returned=19 new=19 total=221 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56859 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56861 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBYWNpZG4waFo4U2c2bmp2VDV2Y2xUQWdNVHZRcFVMN3B3MjZSR19QcXBTejM0bVp0REZtZWphem0zclg3cmVQZldrdEtnSDMzVkxaLV9BNkd2bmtMLQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=12 returned=19 new=19 total=240 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBMkZ0UTdKNEZ6NkZzUHJtOHBiZFFWMUlkUkszZGp2NkltN1NadGVGdHc1TkxDR0NKbUhXRnBRLVZMaXJyTVpZNUwyN3hJNnF1SFpfT0kzbTF2dnNiYw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=13 returned=21 new=21 total=261 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBUklWVGFnc2hFbG5VU2R0WVNLWkxFZzBSLVJmWnZqRk5qbnA0YjAxWEE5X1ItcTFoN1p0Y3l6RHRqLU50UDAwcnVUMGd3MXNxOElhdENGMUZqNXQ3YQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=14 returned=20 new=20 total=281 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCM2ltcGsySDl5UV9wVXJ2VklpM3RzaGp5dWVpSEd6VEt1bFZkWFRQa00wZEZHazlGTjcxbUdIZzFNLUZTSElidVNnY09lUGVrc1p0SDk0T0xzaEVaYQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=15 returned=19 new=19 total=300 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEb1BQZkp3YzdWRUJabFhTbDBBRW45aldRWFBMR2NrRTk2c2dNWVRodU9sOEtjVTVMRi1nbmxlUXZNbXN5S2ZGUkpxUDVNWG9jZmk3aWM0VDRYZVgtcQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=16 returned=23 new=23 total=323 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCYXV3VVoxWGR6Z0hUREo1UEt2aTlnR0ZHMnBVTjJJdVFpd1NRSEJZcW96bDJuNmg1SnU4d1NjaHN5SU05QW84el9BNHNGMnI1aXNWSFBMRmQtVmdrSQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=17 returned=19 new=19 total=342 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCVWlmX1hiZHpsU19yQURBYnFUTHRickdCM2VwTmFlNHYyZlZhd0xxTldmTXBpWVhLbVlvN24tdldWZUtYa2luX0FWZ29kTjhwUWRsUFFpX21UU3JScA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=18 returned=18 new=18 total=360 has_cursor=True
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56876 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56849 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFDTUxNTVNZS1ZvYll0dHFUU1ZtdDBJX3pqX3VMOTlwQjQwQnAyYUZtdGNMcDI5Qmw1bUs0MlVIWHg0MHFkYU5rdm9tU2RQczdtU0h1TG13VEMwVTd2aA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=19 returned=23 new=23 total=383 has_cursor=True
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFDOHlTNmpHeUlrbXh3YTFKTmptRzYyWXdOSHRDcGozUEZ2MVcwVDNUU2luS183SUZZUDVZRS1MYW9mckp4c2dQa0NmZzIxZmczRS15VVIzemN4OEJLOA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=20 returned=25 new=25 total=408 has_cursor=True
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBTzZmZkRzeVVNVGQ0UWJBVEg2Z1YyTEg0UmFnREpPRlBCUW5SMkNaYnZZUjVteldpZElOY3B2RDZTT0pCSmRJSl9QblRPWlZUaVAyb0VYZ3U1TWtFRQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=21 returned=23 new=23 total=431 has_cursor=True
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCb1NZeVZpb1pHeGV6Q2dZcHduR3pjQ0lDLXJKZXdhcDM4bDVGTXlnRjJoVWQ1bmROLWRmQ29WRXk5NTR0ZC1TTFA4QTgyWnd3N0hKRVFpOUV5UjJINg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=22 returned=23 new=23 total=454 has_cursor=True
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56879 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEbEVkeTIxQjUzOW43bU9xUUl0RllmaWZJUm1hYXlMSkVXX3BTVTk3cFByX2RNNmt4Qjh6MlFNV1ZBdDRhUmktQ1lRUVE2QktHeDIxeHdUVWc3eEJNcQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=23 returned=21 new=21 total=475 has_cursor=True
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCUmlBOUVJOUNlcnQzX3R4cnlfUVNNRkppYXphd1RON19PRGJsbDQ3LXRwRGQzMFJCZXNxaVpSeEY0MHRqVmc1bkU5Q3VxTzQxVm5aTnhZUFRMRG1zNg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=24 returned=22 new=22 total=497 has_cursor=True
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBVUpQbEo3UzR6U0JqMFczbkZGMWxjeXdpbWliNVBxVFdqZnJkTEk1QUFfQXU3T3JnaFp2Rl9Zbk1lcDRvTjFXVDRHOS11djBkTFFSb295elkwWEdIcg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=25 returned=22 new=22 total=519 has_cursor=True
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEOU5Pc0pHbmdPVHdnVHF2VkxZa2ZsQWhOV2JLZEdQb0p1ckRPd3dLbkFfTWFPbjRjOW1pbWFsckVTeWFQWk9MeTBGX2JxbUk3Z3pXWlFRV3o3ajJOQg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=26 returned=23 new=23 total=542 has_cursor=True
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEeDNXNDFscFFydTcwa0dJcFhVcHhXUnNRLVZpYUlGSVlvX2ExU01SbnoweVNOYkNUTkE5LW9ZQmJhaGswMEQtZWlHRWplOTY4NzZNamsyalh3cWdISQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=27 returned=19 new=19 total=561 has_cursor=True
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEWktwMTBUZ0JRSDBOb010eDhLVlN6djQ0cVp5TkNiQWJhTjJkdl8yQ0trMThaZnhHY1Z6MHpJV2pWQmhnS3QzalVwQUpyOEZpOWtHTWp0OVdYYnRBbA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=28 returned=22 new=22 total=583 has_cursor=True
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56885 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56887 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCNTA0Y3NxZ0NuYzBuYWJFWnd0NVoyUTBpLUVIVDVVbFdDXzd1M0FvbVdhMTlGaHpHeV96WXpnSm5BRUxJUEZWSnhVZzZjSDdGckExWDFVcXhPc25Pcw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=29 returned=24 new=24 total=607 has_cursor=True
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56889 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56891 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56882 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEUnRhLXc0MGtPMHdyQmlxTjBlSENrN0ZNRU50U0xSZ215Y3dIWjhxdFlidGtiT0hCNzd5VGlYYlFEVVRlLVdYcnNnU3FpOGhBTzYtT3lKUFl2MXczMg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=30 returned=23 new=23 total=630 has_cursor=True
+WARNING:instagram:followers_stop reason=page_budget pages=30 budget=30
+INFO:instagram:followers_fetched pages=30 users=630 exhausted=False
+INFO:instagram:followers_progress_saved collected=630
+WARNING:instagram:fetch_incomplete followers_collected=630 followers_expected=1466
+INFO:     127.0.0.1:56848 - "POST /api/fetch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56898 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/accounts/current_user/?edit=true
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/accounts/current_user/?edit=true (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:private_api_check ok=true
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=1 returned=200 new=200 total=200 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=200 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=2 returned=200 new=200 total=400 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=400 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=3 returned=200 new=200 total=600 has_cursor=True
+INFO:     127.0.0.1:56924 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=600 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=4 returned=200 new=200 total=800 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=800 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=5 returned=189 new=188 total=988 has_cursor=False
+INFO:instagram:following_fetched pages=5 users=988 exhausted=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56927 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56929 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCczhUMXlvMlp5bkFQb1NGbHVWWDZvdHJyV1p4WVNKRzhZM2hKNHBoZUZfLWJTdXhrN00tWlBxM190NUk5VlBTM09DUEV1bk05Y0sxUFBDNnUtWjJVZg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=1 returned=22 new=22 total=22 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56932 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBWW9XUDhqWTc4R1Q2TnFqZWMwTy04M241UEpOY2dqUFhFeFZDZlpVRFI5b3g3ZU1GT1dUNHViUFd5Wks4UWhhM1RmMzF5MVpraFRFMXctcUp3U1RZOA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=2 returned=22 new=22 total=44 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFDdXdrbVN4ZEozeDNPZDhXNlpvaU1vMnRWSzdEbi1SVmJ1SGRjN1V4cEZpN1h6bDFJZWJTcEtFS1JEa3U2alN0VnFpa1E2emRINGlrZWVuS1pBWHZjUg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=3 returned=24 new=24 total=68 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEOUV1d0NvNk9Rc2NKVUhSWVMzRHF1ZmxaWEdxRi1LcFE5VkZORHd3bTN5VlRrdUtMQ1FDSnJVNEpUTFhVODZaekpIN3NfTHFHR3lRUFhrYWQwTzYyNA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=4 returned=25 new=25 total=93 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCTEF1amV4aDdGUHduTUNNb0hHMzJkQ3dNM3VMMmZqWGVFMUFUdzM1ZUdteVB3NF82WGFFMGxOdFlTenZid18wR0ZBTzFVQlgwT1pTM0tZTVJwUG5lcg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=5 returned=22 new=22 total=115 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBZUNjS0lyamhWWFVHRWtPQ2JpUmo1amVudmJ6eVpmX3JDaVVfQVpwblRRTEdUaVVKMlVUZV9oRmZ0cjNZTExySnktQmt1WE83QkV2WnVQdjRvRE5oZg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=6 returned=25 new=25 total=140 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEM2hNRklfMDcwdUhsOHViMG8xam43bHd5WnRlMUowSWt4c2dWNFVvYnd6YU1BZ1NxeUpRbGxnU0pZY0U4WjNkRnpPTlVFMGJRWWdrZU56a09XRmF6cQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=7 returned=25 new=25 total=165 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEYUxMbG9VNnFqRXpUeU5xc05YNExZTzhyTWlHQU5hVmY5WWVVTndxcEtyRFdzOVdZS08yaWtBeW9Qa3I1MzJZMG1XSjI5bVY4QjVPZUVCNWJoTVFzMQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=8 returned=25 new=25 total=190 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCdUpGTlU3aU1PTG9ZVk1jdHVTbTVkYmdaMEhsMzlucUFLWmlFLVBzaUVTZVVLbjZmMkx3R2Fwck5wUmhKQXRZdi1Zbk9CRkNxX2J6bGM2NERuazVrMQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=9 returned=24 new=24 total=214 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBdXM3TDBPUFQ5Zk5JS0xma1M4Y1UzSk4xbFdTT3NObUZFQ3IwakVOQjQ5SzUtUS1xeTN1S3ZXRTliNzlHeUY1VHROM2I1TzlRMFdmVFZ1Qkd0MGdIWQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=10 returned=24 new=24 total=238 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCYkJBWklnM0xoY09DSmNvaFBEYW8yZG9lc1U1LS1DWVJEeFgtWHpXYU5iWW9zaE4xZUkxWnJtcXY3NmhaMGRaVF84ajNKYnRSbGpEVlVfRjloRFB4RA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=11 returned=20 new=20 total=258 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56946 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56948 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFESktzWVpEanc3UVJBcWdkUFJUOVJTRi1GajJfbDJhRTgyYkxZcXVCLS1SbFhUa0YyUmo5QU5ZNDdRelA5cVZKejlFNG1WbWhvVUgwN00zd1FSaXZJVg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=12 returned=21 new=21 total=279 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEV2ZPMEJIYVQwbUhVT0VMRUM1ay1SWU56MFlsUEdSOVd6dVN0UmNwMjQ0RW1sYkdfdVN3Qjc0R0lPQ21VbHhESXZjTnF5VkFGZWpablpySTlTUHpoTw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=13 returned=18 new=18 total=297 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCNjNVLWpUU0VyWmZVc0hoQWJra0dLcGhXQllvaExNNHZ3N2VBbEs4MmNqRHdxX2t3RFA2OGo3MGVlTV9YMmlpVDBUUFNTRTQwbTh6Z0pfRHBJVzl2Tw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=14 returned=22 new=22 total=319 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCRWRRWUZPMkpLMUpibXp6THhXMDdWNVhBYlRWTTFGMDk3OGhuaTN2VENvSlZJRlJ2Y0FUeEVVOTdkbEc3Y1c3cm5aMFMyeEd3bzRuTkpsUTJ4R2RIdw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=15 returned=22 new=22 total=341 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFDeEVNZ29XZ1RXMlhEa3l6bjlLUmUwdllkUkl5LVFDMWpUdzEwWWlwZUI3aXZnMzhXQWo5ajYzbjdqcjVkZ2JKQmwzY3J2dVlzRWhSR0d3dGlnQjRINQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=16 returned=23 new=23 total=364 has_cursor=True
+INFO:     127.0.0.1:56951 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56953 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFENk11emt1ZUhsX2VNQ2twOTgtZndITDdmamJJRFlocmVROGFTMUVCREF3QzB4aWM4OXpVWFdJcm9DNVl0UEQ1amdEd3FxU3lDQkdpZ2VIXzZMWnBQSw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=17 returned=22 new=22 total=386 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEMkpiLURRcE1BSnFjWi03RE5NT0p2Q1BkRHNPY0tYNmdUT1JYU3hVcXMwczRBZHFqa3FJM0xRWmNjOXJneUMxS2hSS3NkOWlTMndoUTUzd2hmMHozYw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=18 returned=25 new=25 total=411 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCbmhiaVlOT3BwYVpQdFlYcTQ0SjBsaWhtdEw1UTNlMGlvVW1LZ1dwWl9GTnRyM05IRTFSSjRGbDZiVG93REN2UFQ1ekh3SUVzOC13djl0eDc2QmdTbA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=19 returned=25 new=25 total=436 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFDbXJPTlVQQmZfQWZ2RWVDNTktWW14eFlTWFo4bE82SU9kZmw3czFDdkd0YnE4MWxCNWVFVXN2VTVhM3hNOWhLMVhWYmdNWURXV2VLNkhJdXRxNjRicQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=20 returned=23 new=23 total=459 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFELVVELXpvV21QMGpYRnl0dW5Xekl3UDVjLXlRREZ1Ty1FZkpDN0dZN1B1eThiSFFTNmV4MUNYUk9JMElEdUFOSG5adFBYR0xCb2xYZkVldTg5eTdZdQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=21 returned=23 new=23 total=482 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFDTzNKOEx2ekJDQVRPU0ZZbXpZRVFwR1FxUEkyZm9TUDFNdXFhUjQtb01wZWo4Smd0NjdWcVpmdG5TbFlIODdJc01VMFJnT1pFaVNVTGtiNjlGV2tQWA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=22 returned=24 new=24 total=506 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCYlU4NVpnSDIwS3JENVV3cEVCVk1uVmpQQUktVnRfZnR2ell5dG9Ta0ZMcVBJWmJZYmtFVnZxS2lJR2J6WGx5YThLc1A2Z0lsM1Q0a1czZHdRUW9XcA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=23 returned=23 new=23 total=529 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFDTGhNbWZZSEJJNjdIaFRhSEVxQlBEVjNsR1lyNUhPT1NSblhfcTNFV2diUzIweGRVYVlyaUFfVHh4WDBwdDlJbWpLYjAwa2xLSnN1RFd4ZjBNbGx0QQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=24 returned=22 new=22 total=551 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBVF9MZTZyU2NQZ3dFbEkzMDRlQkZtV2Q3VTFZS1U2alluenlMVEgwc19XVndmckYyc3dLQzN2QjRuUzhOSEQ2UXo0RXNfbDdIVHJDcXVrcW9UVnh4aA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=25 returned=22 new=22 total=573 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBSk1vQndiQzEwZ1BrdlNtMkNBSlNFSElwZ2RTN0w4Q2I3aVBFbWdiYlV2RmZvVlYwTzBvQTd0OXNHNWM1cXBIZVBFSHZrNE1IY3h2SXBzc0EtYWhrYQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=26 returned=23 new=23 total=596 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCb0pnRFRwVTJpZVRWZDRCaml2QlhzWDNDVXZkU2dBd1N2alB4RDVFaXZKd2FWWG9JQi1aVXk2eVVSQU5JWDF0Tk1IY0hzanMzTGRPSUdYcHhTU29FcQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=27 returned=22 new=22 total=618 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEN2NFN050TlJ2SGlKNXp0U2EyOVNTUUNndlVzNjMwWE5fYVJvZGdFNGNIWjh6Q2lXeW1uV0J6dVhwLWw3aF9aTVlBSXoyRmJRQUotZThNZDE3RC1MOQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=28 returned=21 new=21 total=639 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEY1ktQWF4UUVGQlRHR0g0S3VLS2FjR3JFaUUwOUpRM0t1NFJ6Qk03MjBlbzRxVXFDX1hlYWZpRnZiT3RlNE5mQVdMWWZhREZJTW1BRmNaUUowOTdlMQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=29 returned=23 new=23 total=662 has_cursor=True
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56918 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBTjVFSEwxRXBSTDdQYzQ4RGRzUC1hVmN2UW4xQTJCN0tIVnc3LUl6b090bnpVal9DeS01dUw0LWVUalA0WFI4aVY1NHhEbnV6T1FmaDFWWE0xNHdYYQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=30 returned=24 new=24 total=686 has_cursor=True
+WARNING:instagram:followers_stop reason=page_budget pages=30 budget=30
+INFO:instagram:followers_fetched pages=30 users=686 exhausted=False
+INFO:instagram:followers_progress_saved collected=1316
+WARNING:instagram:fetch_incomplete followers_collected=1316 followers_expected=1466
+INFO:     127.0.0.1:56916 - "POST /api/fetch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/accounts/current_user/?edit=true
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/accounts/current_user/?edit=true (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:private_api_check ok=true
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=1 returned=200 new=200 total=200 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=200 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=2 returned=200 new=200 total=400 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=400 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=3 returned=200 new=200 total=600 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=600 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=4 returned=200 new=200 total=800 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/following/
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/following/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=800 (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:following_page page=5 returned=189 new=187 total=987 has_cursor=False
+INFO:instagram:following_fetched pages=5 users=987 exhausted=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57003 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57005 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFBZWFBR05ZRnJCQ2JCQnB3aUhiNHNoRU10ZFhENm0wMjVyTGpPVHhoUk50MlZVSVFsbnRPdFlsdXR3aC1GMEhpZkxjSGJxYnhxdGRNckVtYUNVM0hjcw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=1 returned=25 new=25 total=25 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFEeFM4b2gxbTRTYWFsU3ZYMVlSQlJQM3VkbTUyNTdOcGU3OGlCcXdwc3RyTlFhTGJYa2pmSzFVd0ZQakZmM25zdXNPemNUTnlsR3pNT0w2V0hsdGZNTQ%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=2 returned=24 new=24 total=49 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFERF9XUWY5cWpnaUdaVzhONUJyZjZ5ZXQyMmNjd0tDLUNxNjFaRjlGY3lOLVd0SG15Z2JqbTZ2Zmw1ZEZTWXVYZW1oWnQzdnpZVl9PVzZUV2IyTXpiYg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=3 returned=23 new=23 total=72 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFER0VDck4tWkpJMl9Sb0F5RmxwTVNQWXFycFQ2eVNZZ3pfMTI2cS1hR0N5Q2R6RUNHelhtTlIteGJzWS1tR2JKUUgza1RicjZhWk5lYkxQempSOFF6Qg%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=4 returned=22 new=22 total=94 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCSDBFWHJGWnBmOElSREpyQVF1MzVWS3QtSEx2NE1ybGxVMXpSUEd5X1NqZURKNk5UYVdqeGowZC15VlpubVRmRVoyUWJ4Y0FyNWpCMjBoVkxvaUR2cA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=5 returned=25 new=25 total=119 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCQlRzbXdFc3Ric1Jmbk9uYmhKVEtnLW9BRWRwWkIyeHhObGJYa0lCRGlqZ1NnWkJ2QlNVT0JBcTh3YVl4cTdOYU1FS1dxWnlibGQtb3pyRUZONnotYw%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=6 returned=25 new=25 total=144 has_cursor=True
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56998 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:instagrapi:https://i.instagram.com/api/v1/friendships/44815589529/followers/
+INFO:private_request:None [200] GET https://i.instagram.com/api/v1/friendships/44815589529/followers/?count=200&rank_token=44815589529_337602a4-8a18-4779-926a-7e06d2a14360&search_surface=follow_list_page&query=&enable_groups=true&max_id=QVFCdWRKZ0ZFdktENUtuRGhCamYzU1prMlF0UDlTd2MxN2p2T1pQZmtQYllSalVDN0prcHlvRWcxMFBtc2RIZ182Nl8wVHFraVlWcWFDdkVLaVBtQ2l2NA%3D%3D (364.0.0.35.86, OnePlus 6T Dev)
+INFO:instagram:followers_page page=7 returned=5 new=5 total=149 has_cursor=False
+INFO:instagram:followers_fetched pages=7 users=149 exhausted=True
+INFO:state:cooldown_set seconds=21600 reason=fetch_completed
+INFO:instagram:fetch_completed dry_run=False following=987 followers=1465 non_followers=3
+INFO:     127.0.0.1:56995 - "POST /api/fetch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57026 - "GET /api/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57028 - "GET /api/progress HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [70926]

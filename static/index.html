@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram 비팔로워 차단기</title>
+    <title>Instagram 언팔러 차단기</title>
     <style>
         * {
             box-sizing: border-box;
@@ -106,6 +106,9 @@
             color: #8e8e8e;
             text-align: center;
             margin-top: 12px;
+        }
+        #cooldown-info {
+            color: #d35400;
         }
         button.fetch-btn {
             background: #00376b;
@@ -326,7 +329,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Instagram 비팔로워 차단기</h1>
+        <h1>Instagram 언팔러 차단기</h1>
 
         <!-- Login State -->
         <div id="login-view">
@@ -363,13 +366,14 @@
             </div>
             <div id="fetch-loading" class="info" style="margin: 16px 0;">
                 <span class="spinner" style="border-color: #8e8e8e; border-top-color: transparent;"></span>
-                비팔로워 조회 중...
+                언팔러 조회 중...
             </div>
             <div id="fetch-error" class="error hidden"></div>
             <div id="fetch-result" class="hidden">
                 <p class="result-header" id="result-count"></p>
                 <div class="user-list" id="user-list"></div>
             </div>
+            <div id="cooldown-info" class="info hidden"></div>
             <button id="fetch-btn" class="fetch-btn" onclick="doFetch()">맞팔 안한 목록</button>
             <button class="logout-btn" onclick="doLogout()">로그아웃</button>
         </div>
@@ -423,8 +427,29 @@
                 if (data.logged_in) {
                     showLoggedIn(data.username);
                 }
+                updateCooldownUI(data.cooldown_remaining, data.cooldown_reason);
             } catch (e) {
                 console.error("Status check failed:", e);
+            }
+        }
+
+        function formatDuration(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            if (h) return `${h}시간 ${m}분`;
+            if (m) return `${m}분`;
+            return `${seconds}초`;
+        }
+
+        // 권장 대기 시간이 남았으면 경고만 보여준다. 실행은 막지 않는다 —
+        // 위험을 감수하고 언제든 조회할 수 있어야 한다.
+        function updateCooldownUI(remaining, reason) {
+            const info = document.getElementById("cooldown-info");
+            if (remaining > 0) {
+                info.textContent = `권장 대기 ${formatDuration(remaining)} 남음 (${reason || "cooldown"}) — 지금 실행하면 소프트 차단 위험이 올라갑니다`;
+                info.classList.remove("hidden");
+            } else {
+                info.classList.add("hidden");
             }
         }
 
@@ -667,6 +692,11 @@
                 } else if (data.status === "login_required") {
                     showView(loginView);
                     showError("login-error", data.message);
+                } else if (data.status === "cooldown") {
+                    btn.disabled = false;
+                    btn.textContent = "언팔";
+                    alert(data.message);
+                    checkStatus();
                 } else {
                     btn.disabled = false;
                     btn.textContent = "언팔";
@@ -698,6 +728,11 @@
                 } else if (data.status === "login_required") {
                     showView(loginView);
                     showError("login-error", data.message);
+                } else if (data.status === "cooldown") {
+                    btn.disabled = false;
+                    btn.textContent = "차단";
+                    alert(data.message);
+                    checkStatus();
                 } else {
                     btn.disabled = false;
                     btn.textContent = "차단";
@@ -722,6 +757,16 @@
                     item.style.display = "none";
                 }
             });
+        }
+
+        // 서버는 1회 실행에 최대 50명만 처리한다. 남은 인원은 skipped로 돌아온다.
+        function writeSummary(label, data) {
+            let msg = `${label} 완료: 성공 ${data.success}명, 실패 ${data.failed}명`;
+            if (data.skipped > 0) {
+                msg += `\n\n1회 실행 상한(50명) 때문에 ${data.skipped}명이 남았습니다.`
+                     + `\n쿨다운이 끝난 뒤 다시 조회해서 이어서 진행하세요.`;
+            }
+            return msg;
         }
 
         function confirmUnfollow() {
@@ -765,13 +810,18 @@
                     const data = await res.json();
                     progressArea.classList.add("hidden");
                     if (data.status === "ok") {
-                        alert(`언팔로우 완료: 성공 ${data.success}명, 실패 ${data.failed}명`);
+                        alert(writeSummary("언팔로우", data));
                         fetchedUsers = [];
                         document.getElementById("list-result").classList.add("hidden");
                         toolbar.classList.add("hidden");
+                        checkStatus();
                     } else if (data.status === "login_required") {
                         showView(loginView);
                         showError("login-error", data.message);
+                    } else if (data.status === "cooldown") {
+                        showError("list-error", data.message);
+                        toolbar.classList.remove("hidden");
+                        checkStatus();
                     } else {
                         showError("list-error", data.message || "언팔로우 실패");
                         toolbar.classList.remove("hidden");
@@ -794,13 +844,18 @@
                     const data = await res.json();
                     progressArea.classList.add("hidden");
                     if (data.status === "ok") {
-                        alert(`차단 완료: 성공 ${data.success}명, 실패 ${data.failed}명`);
+                        alert(writeSummary("차단", data));
                         fetchedUsers = [];
                         document.getElementById("list-result").classList.add("hidden");
                         toolbar.classList.add("hidden");
+                        checkStatus();
                     } else if (data.status === "login_required") {
                         showView(loginView);
                         showError("login-error", data.message);
+                    } else if (data.status === "cooldown") {
+                        showError("list-error", data.message);
+                        toolbar.classList.remove("hidden");
+                        checkStatus();
                     } else {
                         showError("list-error", data.message || "차단 실패");
                         toolbar.classList.remove("hidden");
@@ -846,6 +901,10 @@
                 } else if (data.status === "login_required") {
                     showView(loginView);
                     showError("login-error", data.message);
+                } else if (data.status === "cooldown") {
+                    document.getElementById("list-progress").classList.add("hidden");
+                    showError("list-error", data.message);
+                    checkStatus();
                 } else {
                     document.getElementById("list-progress").classList.add("hidden");
                     showError("list-error", data.message || "조회 실패");

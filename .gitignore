@@ -1,5 +1,7 @@
 session.json
 device.json
+cooldown.json
+followers_progress.json
 venv/
 __pycache__/
 nohup.out
