@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -36,6 +37,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/api/health")
+async def api_health():
+    return {"app": "instagram-unfollowers", "status": "ok", "pid": os.getpid()}
 
 
 class LoginRequest(BaseModel):
