@@ -8,7 +8,12 @@ venv/bin/pip install -r requirements.txt
 venv/bin/python build_desktop_app.py
 ```
 
-바탕화면에 `인스타그램 맞팔.app`이 생성됩니다.
+`~/Applications/인스타그램 맞팔.app`에 설치하고 바탕화면에 바로가기를 만듭니다.
+Launchpad 등록은 다음 명령으로 갱신할 수 있습니다.
+
+```sh
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f "$HOME/Applications/인스타그램 맞팔.app"
+```
 
 - 서버가 꺼져 있으면 앱을 더블클릭해 서버를 시작하고 브라우저를 엽니다.
 - 실행 중이면 앱을 다시 열어 **화면 열기** 또는 **서버 끄기**를 선택합니다.
