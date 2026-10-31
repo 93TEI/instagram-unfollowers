@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram 언팔러 차단기</title>
+    <title>Instagram 맞팔 확인</title>
     <style>
         * {
             box-sizing: border-box;
@@ -99,7 +99,7 @@
             margin-bottom: 8px;
         }
         .hidden {
-            display: none;
+            display: none !important;
         }
         .info {
             font-size: 13px;
@@ -154,13 +154,6 @@
         .user-item:last-child {
             border-bottom: none;
         }
-        .user-item img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
         .user-item .user-info {
             overflow: hidden;
             flex: 1;
@@ -170,30 +163,6 @@
             font-size: 14px;
             font-weight: 600;
             color: #262626;
-        }
-        .user-item .user-info .fname {
-            font-size: 12px;
-            color: #8e8e8e;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .user-item .item-actions {
-            display: flex;
-            gap: 4px;
-            margin-left: auto;
-            flex-shrink: 0;
-        }
-        .user-item .item-actions button {
-            width: auto;
-            padding: 4px 8px;
-            font-size: 11px;
-            margin-top: 0;
-            border-radius: 4px;
-        }
-        .user-item .item-actions button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
         }
         /* List view styles */
         .list-container {
@@ -264,72 +233,11 @@
             white-space: nowrap;
             flex-shrink: 0;
         }
-        .unfollow-btn {
-            background: #e67e22 !important;
-        }
-        .unfollow-btn:hover {
-            background: #d35400 !important;
-        }
-        .block-btn {
-            background: #ed4956 !important;
-        }
-        .block-btn:hover {
-            background: #c13543 !important;
-        }
-        /* Modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.active {
-            display: flex;
-        }
-        .modal-box {
-            background: #fff;
-            border-radius: 12px;
-            padding: 28px 24px;
-            text-align: center;
-            max-width: 320px;
-            width: 90%;
-        }
-        .modal-box p {
-            font-size: 15px;
-            color: #262626;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        .modal-buttons button {
-            width: auto;
-            padding: 10px 24px;
-            font-size: 14px;
-            border-radius: 6px;
-            margin-top: 0;
-        }
-        .modal-buttons .modal-cancel {
-            background: #dbdbdb;
-            color: #262626;
-        }
-        .modal-buttons .modal-cancel:hover {
-            background: #c7c7c7;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Instagram 언팔러 차단기</h1>
+        <h1>Instagram 맞팔 확인</h1>
 
         <!-- Login State -->
         <div id="login-view">
@@ -357,136 +265,81 @@
             <div id="twofa-error" class="error hidden"></div>
         </div>
 
-        <!-- Logged In State -->
         <div id="loggedin-view" class="hidden">
             <div class="success">
                 <div class="check">&#10003;</div>
                 <p>로그인 완료!</p>
                 <p class="username" id="display-username"></p>
             </div>
-            <div id="fetch-loading" class="info" style="margin: 16px 0;">
-                <span class="spinner" style="border-color: #8e8e8e; border-top-color: transparent;"></span>
-                언팔러 조회 중...
-            </div>
-            <div id="fetch-error" class="error hidden"></div>
-            <div id="fetch-result" class="hidden">
-                <p class="result-header" id="result-count"></p>
-                <div class="user-list" id="user-list"></div>
-            </div>
-            <div id="cooldown-info" class="info hidden"></div>
+            <p id="snapshot-info" class="info">저장된 JSON을 확인합니다.</p>
+            <p id="export-info" class="info" aria-live="polite"></p>
+            <div id="fetch-error" class="error hidden" role="alert"></div>
             <button id="fetch-btn" class="fetch-btn" onclick="doFetch()">맞팔 안한 목록</button>
-            <button class="logout-btn" onclick="doLogout()">로그아웃</button>
+            <button id="refresh-btn" onclick="doRefresh()">JSON 갱신</button>
+            <button id="logout-btn" class="logout-btn" onclick="doLogout()">로그아웃</button>
         </div>
-
-        <!-- List View -->
         <div id="list-view" class="hidden list-view">
             <button class="back-btn" onclick="goBack()">&larr; 돌아가기</button>
             <div id="list-toolbar" class="toolbar hidden">
-                <input type="text" id="search-input" placeholder="아이디 또는 이름 검색" oninput="filterList()">
-                <button class="unfollow-btn" onclick="confirmUnfollow()">언팔로우</button>
-                <button class="block-btn" onclick="confirmBlock()">차단</button>
+                <input type="text" id="search-input" placeholder="아이디 검색" oninput="filterList()">
             </div>
-            <div id="list-progress" class="progress-area">
+            <div id="list-progress" class="progress-area hidden">
                 <div class="spinner-lg"></div>
-                <p class="progress-text" id="progress-text">조회 준비 중...</p>
+                <p class="progress-text">저장된 JSON 비교 중...</p>
             </div>
-            <div id="list-error" class="error hidden"></div>
+            <div id="list-error" class="error hidden" role="alert"></div>
             <div id="list-result" class="hidden">
                 <p class="result-header" id="list-result-count"></p>
+                <p id="list-snapshot-info" class="info"></p>
                 <div class="user-list" id="list-user-list"></div>
             </div>
         </div>
     </div>
-
-    <!-- Confirm Modal -->
-    <div id="confirm-modal" class="modal-overlay">
-        <div class="modal-box">
-            <p id="modal-message"></p>
-            <div class="modal-buttons">
-                <button class="modal-cancel" onclick="closeModal()">아니오</button>
-                <button id="modal-confirm-btn" onclick="modalConfirm()">예</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const loginView = document.getElementById("login-view");
         const twofaView = document.getElementById("twofa-view");
         const loggedinView = document.getElementById("loggedin-view");
         const listView = document.getElementById("list-view");
-
-        let progressInterval = null;
+        let operationPending = false;
         let fetchedUsers = [];
-        let modalAction = null;
-
-        // Check status on load
-        async function checkStatus() {
-            try {
-                const res = await fetch("/api/status");
-                const data = await res.json();
-                if (data.logged_in) {
-                    showLoggedIn(data.username);
-                }
-                updateCooldownUI(data.cooldown_remaining, data.cooldown_reason);
-            } catch (e) {
-                console.error("Status check failed:", e);
-            }
-        }
-
-        function formatDuration(seconds) {
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            if (h) return `${h}시간 ${m}분`;
-            if (m) return `${m}분`;
-            return `${seconds}초`;
-        }
-
-        // 권장 대기 시간이 남았으면 경고만 보여준다. 실행은 막지 않는다 —
-        // 위험을 감수하고 언제든 조회할 수 있어야 한다.
-        function updateCooldownUI(remaining, reason) {
-            const info = document.getElementById("cooldown-info");
-            if (remaining > 0) {
-                info.textContent = `권장 대기 ${formatDuration(remaining)} 남음 (${reason || "cooldown"}) — 지금 실행하면 소프트 차단 위험이 올라갑니다`;
-                info.classList.remove("hidden");
-            } else {
-                info.classList.add("hidden");
-            }
-        }
 
         function showView(view) {
-            loginView.classList.add("hidden");
-            twofaView.classList.add("hidden");
-            loggedinView.classList.add("hidden");
-            listView.classList.add("hidden");
-            view.classList.remove("hidden");
-            // Expand container for list view
-            const container = document.querySelector(".container");
-            if (view === listView) {
-                container.classList.add("expanded");
-            } else {
-                container.classList.remove("expanded");
-            }
+            [loginView, twofaView, loggedinView, listView].forEach(v => v.classList.toggle("hidden", v !== view));
+            document.querySelector(".container").classList.toggle("expanded", view === listView);
         }
-
-        function showLoggedIn(username) {
-            document.getElementById("display-username").textContent = "@" + username;
-            document.getElementById("fetch-loading").classList.add("hidden");
-            document.getElementById("fetch-result").classList.add("hidden");
-            document.getElementById("fetch-btn").classList.remove("hidden");
-            hideError("fetch-error");
-            showView(loggedinView);
-        }
-
-        function showError(elementId, message) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
+        function showError(id, message) {
+            const el = document.getElementById(id);
+            el.textContent = message || "처리하지 못했습니다.";
             el.classList.remove("hidden");
         }
-
-        function hideError(elementId) {
-            document.getElementById(elementId).classList.add("hidden");
+        function hideError(id) { document.getElementById(id).classList.add("hidden"); }
+        function savedText(savedAt) {
+            return savedAt ? "JSON 저장: " + new Date(savedAt * 1000).toLocaleString() + " · 저장된 파일 기준" : "저장된 JSON이 없습니다.";
         }
-
+        async function api(path, options) {
+            const response = await fetch(path, options);
+            if (!response.ok) throw new Error("request failed");
+            return response.json();
+        }
+        async function updateStatus() {
+            const data = await api("/api/status");
+            const exp = data.export || {};
+            document.getElementById("snapshot-info").textContent = savedText(exp.saved_at);
+            const wait = exp.retry_after > 0 ? ` (다음 확인까지 약 ${Math.ceil(exp.retry_after / 60)}분)` : "";
+            document.getElementById("export-info").textContent = (exp.message || "") + wait;
+            const active = ["preparing", "submitted", "pending", "uncertain", "downloading", "downloaded"].includes(exp.phase);
+            document.getElementById("refresh-btn").textContent = active ? "JSON 준비 확인" : "JSON 갱신";
+            return data;
+        }
+        function showLoggedIn(username) {
+            document.getElementById("display-username").textContent = username ? "@" + username : "저장된 계정";
+            showView(loggedinView);
+            updateStatus().catch(() => showError("fetch-error", "저장 상태를 확인하지 못했습니다."));
+        }
+        function setPending(value) {
+            operationPending = value;
+            ["fetch-btn", "refresh-btn", "logout-btn"].forEach(id => document.getElementById(id).disabled = value);
+        }
         async function doLogin() {
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value;
@@ -511,7 +364,7 @@
                     showView(twofaView);
                 } else if (data.status === "challenge_required") {
                     showError("login-error", data.message);
-                } else if (data.status === "error") {
+                } else {
                     showError("login-error", data.message);
                 }
             } catch (e) {
@@ -573,9 +426,7 @@
                 if (data.status === "ok") {
                     const username = document.getElementById("username").value.trim();
                     showLoggedIn(username);
-                } else if (data.status === "error") {
-                    showError("twofa-error", data.message);
-                } else if (data.status === "challenge_required") {
+                } else {
                     showError("twofa-error", data.message);
                 }
             } catch (e) {
@@ -586,346 +437,97 @@
             }
         }
 
+
         async function doLogout() {
+            if (operationPending) return;
+            setPending(true);
             try {
-                await fetch("/api/logout", {method: "POST"});
-                showView(loginView);
+                const data = await api("/api/logout", {method: "POST"});
+                if (data.status !== "ok") { showError("fetch-error", data.message); return; }
+                fetchedUsers = [];
+                document.getElementById("list-user-list").replaceChildren();
                 document.getElementById("username").value = "";
                 document.getElementById("password").value = "";
-            } catch (e) {
-                console.error("Logout failed:", e);
-            }
+                showView(loginView);
+            } catch (_) { showError("fetch-error", "로그아웃하지 못했습니다."); }
+            finally { setPending(false); }
         }
-
         function goBack() {
-            if (progressInterval) {
-                clearInterval(progressInterval);
-                progressInterval = null;
-            }
-            showView(loggedinView);
+            if (!operationPending) showView(loggedinView);
         }
-
-        async function pollProgress() {
-            try {
-                const res = await fetch("/api/progress");
-                const data = await res.json();
-                const textEl = document.getElementById("progress-text");
-                if (data.phase === "following") {
-                    const total = data.total ? data.total.toLocaleString() : "?";
-                    textEl.textContent = `팔로잉 조회 중: ${data.fetched.toLocaleString()} / ${total}명`;
-                } else if (data.phase === "followers") {
-                    const total = data.total ? data.total.toLocaleString() : "?";
-                    textEl.textContent = `팔로워 조회 중: ${data.fetched.toLocaleString()} / ${total}명`;
-                }
-            } catch (e) {
-                // ignore polling errors
-            }
-        }
-
         function renderUserList(users) {
-            const userList = document.getElementById("list-user-list");
-            userList.textContent = "";
-            users.forEach(function(u) {
-                const div = document.createElement("div");
-                div.className = "user-item";
-                div.dataset.userid = u.user_id;
-                div.dataset.username = u.username.toLowerCase();
-                div.dataset.fullname = (u.full_name || "").toLowerCase();
-
-                const img = document.createElement("img");
-                img.src = u.profile_pic_url;
-                img.alt = "";
-                img.referrerPolicy = "no-referrer";
-                div.appendChild(img);
-
-                const info = document.createElement("div");
-                info.className = "user-info";
-
-                const uname = document.createElement("div");
-                uname.className = "uname";
-                uname.textContent = "@" + u.username;
-                info.appendChild(uname);
-
-                const fname = document.createElement("div");
-                fname.className = "fname";
-                fname.textContent = u.full_name || "";
-                info.appendChild(fname);
-
-                div.appendChild(info);
-
-                const actions = document.createElement("div");
-                actions.className = "item-actions";
-
-                const unfBtn = document.createElement("button");
-                unfBtn.className = "unfollow-btn";
-                unfBtn.textContent = "언팔";
-                unfBtn.onclick = function() { doSingleUnfollow(u.user_id, u.username, div, unfBtn); };
-                actions.appendChild(unfBtn);
-
-                const blkBtn = document.createElement("button");
-                blkBtn.className = "block-btn";
-                blkBtn.textContent = "차단";
-                blkBtn.onclick = function() { doSingleBlock(u.user_id, u.username, div, blkBtn); };
-                actions.appendChild(blkBtn);
-
-                div.appendChild(actions);
-                userList.appendChild(div);
-            });
-        }
-
-        async function doSingleUnfollow(userId, username, rowEl, btn) {
-            if (!confirm(`@${username}을(를) 언팔로우하시겠습니까?`)) return;
-            btn.disabled = true;
-            btn.textContent = "...";
-            try {
-                const res = await fetch("/api/bulk-unfollow", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({user_ids: [userId]}),
-                });
-                const data = await res.json();
-                if (data.status === "ok" && data.success > 0) {
-                    rowEl.remove();
-                    fetchedUsers = fetchedUsers.filter(u => u.user_id !== userId);
-                    document.getElementById("list-result-count").textContent =
-                        "맞팔이 아닌 유저: " + fetchedUsers.length + "명";
-                } else if (data.status === "login_required") {
-                    showView(loginView);
-                    showError("login-error", data.message);
-                } else if (data.status === "cooldown") {
-                    btn.disabled = false;
-                    btn.textContent = "언팔";
-                    alert(data.message);
-                    checkStatus();
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = "언팔";
-                    alert("언팔로우 실패");
-                }
-            } catch (e) {
-                btn.disabled = false;
-                btn.textContent = "언팔";
-                alert("네트워크 오류가 발생했습니다.");
+            const list = document.getElementById("list-user-list");
+            list.replaceChildren();
+            for (const user of users) {
+                const row = document.createElement("div");
+                row.className = "user-item";
+                row.dataset.username = user.username;
+                row.textContent = "@" + user.username;
+                list.appendChild(row);
             }
         }
-
-        async function doSingleBlock(userId, username, rowEl, btn) {
-            if (!confirm(`@${username}을(를) 차단하시겠습니까?`)) return;
-            btn.disabled = true;
-            btn.textContent = "...";
-            try {
-                const res = await fetch("/api/bulk-block", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify({user_ids: [userId]}),
-                });
-                const data = await res.json();
-                if (data.status === "ok" && data.success > 0) {
-                    rowEl.remove();
-                    fetchedUsers = fetchedUsers.filter(u => u.user_id !== userId);
-                    document.getElementById("list-result-count").textContent =
-                        "맞팔이 아닌 유저: " + fetchedUsers.length + "명";
-                } else if (data.status === "login_required") {
-                    showView(loginView);
-                    showError("login-error", data.message);
-                } else if (data.status === "cooldown") {
-                    btn.disabled = false;
-                    btn.textContent = "차단";
-                    alert(data.message);
-                    checkStatus();
-                } else {
-                    btn.disabled = false;
-                    btn.textContent = "차단";
-                    alert("차단 실패");
-                }
-            } catch (e) {
-                btn.disabled = false;
-                btn.textContent = "차단";
-                alert("네트워크 오류가 발생했습니다.");
-            }
-        }
-
         function filterList() {
-            const query = document.getElementById("search-input").value.trim().toLowerCase();
-            const items = document.querySelectorAll("#list-user-list .user-item");
-            items.forEach(function(item) {
-                const uname = item.dataset.username;
-                const fname = item.dataset.fullname;
-                if (!query || uname.includes(query) || fname.includes(query)) {
-                    item.style.display = "";
-                } else {
-                    item.style.display = "none";
-                }
+            const query = document.getElementById("search-input").value.trim().toLowerCase().replace(/^@/, "");
+            document.querySelectorAll("#list-user-list .user-item").forEach(row => {
+                row.classList.toggle("hidden", !row.dataset.username.toLowerCase().includes(query));
             });
         }
-
-        // 서버는 1회 실행에 최대 50명만 처리한다. 남은 인원은 skipped로 돌아온다.
-        function writeSummary(label, data) {
-            let msg = `${label} 완료: 성공 ${data.success}명, 실패 ${data.failed}명`;
-            if (data.skipped > 0) {
-                msg += `\n\n1회 실행 상한(50명) 때문에 ${data.skipped}명이 남았습니다.`
-                     + `\n쿨다운이 끝난 뒤 다시 조회해서 이어서 진행하세요.`;
-            }
-            return msg;
-        }
-
-        function confirmUnfollow() {
-            modalAction = "unfollow";
-            document.getElementById("modal-message").textContent = "일괄 언팔하시겠습니까?";
-            document.getElementById("modal-confirm-btn").className = "unfollow-btn";
-            document.getElementById("confirm-modal").classList.add("active");
-        }
-
-        function confirmBlock() {
-            modalAction = "block";
-            document.getElementById("modal-message").textContent = "일괄 차단하시겠습니까?";
-            document.getElementById("modal-confirm-btn").className = "block-btn";
-            document.getElementById("confirm-modal").classList.add("active");
-        }
-
-        function closeModal() {
-            modalAction = null;
-            document.getElementById("confirm-modal").classList.remove("active");
-        }
-
-        async function modalConfirm() {
-            closeModal();
-            if (!fetchedUsers.length) return;
-
-            const userIds = fetchedUsers.map(u => u.user_id);
-            const toolbar = document.getElementById("list-toolbar");
-            const progressArea = document.getElementById("list-progress");
-            const progressText = document.getElementById("progress-text");
-
-            if (modalAction === "unfollow") {
-                toolbar.classList.add("hidden");
-                progressArea.classList.remove("hidden");
-                progressText.textContent = `언팔로우 진행 중... (${userIds.length}명)`;
-                try {
-                    const res = await fetch("/api/bulk-unfollow", {
-                        method: "POST",
-                        headers: {"Content-Type": "application/json"},
-                        body: JSON.stringify({user_ids: userIds}),
-                    });
-                    const data = await res.json();
-                    progressArea.classList.add("hidden");
-                    if (data.status === "ok") {
-                        alert(writeSummary("언팔로우", data));
-                        fetchedUsers = [];
-                        document.getElementById("list-result").classList.add("hidden");
-                        toolbar.classList.add("hidden");
-                        checkStatus();
-                    } else if (data.status === "login_required") {
-                        showView(loginView);
-                        showError("login-error", data.message);
-                    } else if (data.status === "cooldown") {
-                        showError("list-error", data.message);
-                        toolbar.classList.remove("hidden");
-                        checkStatus();
-                    } else {
-                        showError("list-error", data.message || "언팔로우 실패");
-                        toolbar.classList.remove("hidden");
-                    }
-                } catch (e) {
-                    progressArea.classList.add("hidden");
-                    toolbar.classList.remove("hidden");
-                    showError("list-error", "네트워크 오류가 발생했습니다.");
-                }
-            } else if (modalAction === "block") {
-                toolbar.classList.add("hidden");
-                progressArea.classList.remove("hidden");
-                progressText.textContent = `차단 진행 중... (${userIds.length}명)`;
-                try {
-                    const res = await fetch("/api/bulk-block", {
-                        method: "POST",
-                        headers: {"Content-Type": "application/json"},
-                        body: JSON.stringify({user_ids: userIds}),
-                    });
-                    const data = await res.json();
-                    progressArea.classList.add("hidden");
-                    if (data.status === "ok") {
-                        alert(writeSummary("차단", data));
-                        fetchedUsers = [];
-                        document.getElementById("list-result").classList.add("hidden");
-                        toolbar.classList.add("hidden");
-                        checkStatus();
-                    } else if (data.status === "login_required") {
-                        showView(loginView);
-                        showError("login-error", data.message);
-                    } else if (data.status === "cooldown") {
-                        showError("list-error", data.message);
-                        toolbar.classList.remove("hidden");
-                        checkStatus();
-                    } else {
-                        showError("list-error", data.message || "차단 실패");
-                        toolbar.classList.remove("hidden");
-                    }
-                } catch (e) {
-                    progressArea.classList.add("hidden");
-                    toolbar.classList.remove("hidden");
-                    showError("list-error", "네트워크 오류가 발생했습니다.");
-                }
-            }
-            modalAction = null;
-        }
-
         async function doFetch() {
-            // Switch to list view
+            if (operationPending) return;
+            setPending(true);
             showView(listView);
-            document.getElementById("list-progress").classList.remove("hidden");
+            hideError("list-error");
             document.getElementById("list-result").classList.add("hidden");
             document.getElementById("list-toolbar").classList.add("hidden");
-            hideError("list-error");
-            document.getElementById("progress-text").textContent = "조회 준비 중...";
+            document.getElementById("list-progress").classList.remove("hidden");
             document.getElementById("search-input").value = "";
-
-            // Start polling progress
-            progressInterval = setInterval(pollProgress, 1000);
-
+            fetchedUsers = [];
+            document.getElementById("list-user-list").replaceChildren();
             try {
-                const res = await fetch("/api/fetch", {method: "POST"});
-                const data = await res.json();
-
-                // Stop polling
-                clearInterval(progressInterval);
-                progressInterval = null;
-
+                const data = await api("/api/fetch", {method: "POST"});
                 if (data.status === "ok") {
                     fetchedUsers = data.users;
-                    document.getElementById("list-progress").classList.add("hidden");
-                    document.getElementById("list-result-count").textContent =
-                        "맞팔이 아닌 유저: " + data.count + "명";
-                    renderUserList(data.users);
+                    renderUserList(fetchedUsers);
+                    document.getElementById("list-result-count").textContent = "맞팔이 아닌 유저: " + data.count + "명";
+                    document.getElementById("list-snapshot-info").textContent = savedText(data.saved_at);
                     document.getElementById("list-result").classList.remove("hidden");
                     document.getElementById("list-toolbar").classList.remove("hidden");
                 } else if (data.status === "login_required") {
                     showView(loginView);
                     showError("login-error", data.message);
-                } else if (data.status === "cooldown") {
-                    document.getElementById("list-progress").classList.add("hidden");
-                    showError("list-error", data.message);
-                    checkStatus();
-                } else {
-                    document.getElementById("list-progress").classList.add("hidden");
-                    showError("list-error", data.message || "조회 실패");
-                }
-            } catch (e) {
-                clearInterval(progressInterval);
-                progressInterval = null;
+                } else { showError("list-error", data.message); }
+            } catch (_) { showError("list-error", "JSON 비교 결과를 가져오지 못했습니다."); }
+            finally {
                 document.getElementById("list-progress").classList.add("hidden");
-                showError("list-error", "네트워크 오류가 발생했습니다.");
+                setPending(false);
             }
         }
-
-        // Enter key handlers
-        document.getElementById("password").addEventListener("keydown", (e) => {
-            if (e.key === "Enter") doLogin();
-        });
-        document.getElementById("twofa-code").addEventListener("keydown", (e) => {
-            if (e.key === "Enter") doVerify();
-        });
-
-        checkStatus();
+        async function doRefresh() {
+            if (operationPending) return;
+            setPending(true);
+            hideError("fetch-error");
+            document.getElementById("export-info").textContent = "내보내기 처리 중... 완료 전까지 기다려주세요.";
+            try {
+                const data = await api("/api/export/refresh", {method: "POST"});
+                if (data.status === "login_required") {
+                    showView(loginView);
+                    showError("login-error", data.message);
+                } else if (["error", "busy"].includes(data.status)) {
+                    showError("fetch-error", data.message);
+                }
+                await updateStatus();
+            } catch (_) {
+                showError("fetch-error", "처리 결과를 확인하지 못했습니다. 중복 요청을 막기 위해 자동 재시도하지 않습니다.");
+            } finally { setPending(false); }
+        }
+        document.getElementById("password").addEventListener("keydown", e => { if (e.key === "Enter" && !document.getElementById("login-btn").disabled) doLogin(); });
+        document.getElementById("twofa-code").addEventListener("keydown", e => { if (e.key === "Enter" && !document.getElementById("twofa-btn").disabled) doVerify(); });
+        updateStatus().then(data => {
+            if (data.logged_in) {
+                document.getElementById("display-username").textContent = data.username ? "@" + data.username : "저장된 계정";
+                showView(loggedinView);
+            }
+        }).catch(() => showError("login-error", "앱 서버에 연결하지 못했습니다."));
     </script>
 </body>
 </html>

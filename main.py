@@ -11,10 +11,9 @@ from pydantic import BaseModel
 from instagram import fetch_non_followers as ig_fetch_non_followers
 from instagram import login as ig_login
 from instagram import logout as ig_logout
-from instagram import bulk_unfollow as ig_bulk_unfollow
-from instagram import bulk_block as ig_bulk_block
+from instagram import refresh_json_export, get_export_status
 from instagram import try_resume_session, verify_2fa as ig_verify_2fa
-from state import app_state, cooldown_remaining, load_cooldown
+from state import app_state, try_start_job, finish_job
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,8 +22,6 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Try to resume existing session on startup."""
-    # 쿨다운을 먼저 복원한다. 서버 재시작으로 요청 예산 제한이 초기화되면 안 된다.
-    load_cooldown()
     logger.info("Attempting session resume...")
     resumed = try_resume_session()
     if resumed:
@@ -53,10 +50,6 @@ class VerifyRequest(BaseModel):
     code: str
 
 
-class BulkActionRequest(BaseModel):
-    user_ids: list
-
-
 @app.get("/")
 async def index():
     return FileResponse("static/index.html")
@@ -64,14 +57,23 @@ async def index():
 
 @app.post("/api/login")
 async def api_login(req: LoginRequest):
-    result = ig_login(req.username, req.password)
-    return result
+    return await run_auth(ig_login, req.username, req.password)
 
 
 @app.post("/api/verify")
 async def api_verify(req: VerifyRequest):
-    result = ig_verify_2fa(req.code)
-    return result
+    return await run_auth(ig_verify_2fa, req.code)
+
+
+async def run_auth(action, *args):
+    def run():
+        if not try_start_job():
+            return {"status": "busy", "message": "다른 작업이 진행 중입니다."}
+        try:
+            return action(*args)
+        finally:
+            finish_job()
+    return await asyncio.to_thread(run)
 
 
 @app.get("/api/status")
@@ -81,8 +83,7 @@ async def api_status():
         "username": app_state["username"],
         "job_status": app_state["job_status"],
         "error": app_state["error"],
-        "cooldown_remaining": cooldown_remaining(),
-        "cooldown_reason": app_state["cooldown_reason"],
+        "export": get_export_status(),
     }
 
 
@@ -90,32 +91,25 @@ async def api_status():
 async def api_progress():
     return {
         "job_status": app_state["job_status"],
-        "phase": app_state["fetch_progress"]["phase"],
-        "fetched": app_state["fetch_progress"]["fetched"],
-        "total": app_state["fetch_progress"]["total"],
+        "export": get_export_status(),
     }
 
 
 @app.post("/api/fetch")
 async def api_fetch(dry_run: bool = False):
-    """dry_run=true면 팔로잉/팔로워 각 1페이지만 호출한다 (세션확인/user_info 포함 요청 약 4회)."""
+    """Compare saved JSON only. No requests to Instagram."""
     result = await asyncio.to_thread(ig_fetch_non_followers, dry_run)
     return result
 
 
-@app.post("/api/bulk-unfollow")
-async def api_bulk_unfollow(req: BulkActionRequest):
-    result = await asyncio.to_thread(ig_bulk_unfollow, req.user_ids)
-    return result
-
-
-@app.post("/api/bulk-block")
-async def api_bulk_block(req: BulkActionRequest):
-    result = await asyncio.to_thread(ig_bulk_block, req.user_ids)
-    return result
+@app.post("/api/export/refresh")
+async def api_refresh_export():
+    return await asyncio.to_thread(refresh_json_export)
 
 
 @app.post("/api/logout")
 async def api_logout():
-    ig_logout()
-    return {"status": "ok"}
+    def run():
+        ig_logout()
+        return {"status": "ok"}
+    return await run_auth(run)
