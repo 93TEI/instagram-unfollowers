@@ -138,6 +138,10 @@ def read_sources(paths):
                 if path.is_symlink():
                     raise ExportError("심볼릭 링크는 가져올 수 없습니다.")
                 add(path.relative_to(source).as_posix(), path.stat().st_size, path.read_bytes)
+        elif RELATION_FILE.fullmatch(source.name):
+            if source.is_symlink():
+                raise ExportError("심볼릭 링크는 가져올 수 없습니다.")
+            add(source.name, source.stat().st_size, source.read_bytes)
         elif zipfile.is_zipfile(source):
             try:
                 with zipfile.ZipFile(source) as archive:

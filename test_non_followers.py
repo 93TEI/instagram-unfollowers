@@ -1,4 +1,5 @@
 """Synthetic exports only. Real accounts and outgoing networking are forbidden."""
+import io
 import json
 import threading
 import zipfile
@@ -406,3 +407,40 @@ def test_ui_contains_only_text_results_and_no_background_polling():
     assert 'row.textContent = "@" + user.username' in html
     for removed in ("profile_pic_url", "full_name", "bulk-unfollow", "bulk-block", "setInterval", 'createElement("img")'):
         assert removed not in html
+
+
+def test_upload_json_files_without_numeric_account_input(logged_in, store):
+    with TestClient(main.app) as client:
+        response = client.post("/api/import", files=[("files", (name, body, "application/json")) for name, body in files().items()])
+        assert response.json()["users"] == [{"username": "zoe"}]
+        assert client.post("/api/fetch").json()["count"] == 1
+
+
+def test_upload_zip_and_failed_import_preserve_previous_data(logged_in, store):
+    archive = io.BytesIO()
+    with zipfile.ZipFile(archive, "w") as z:
+        for name, body in files().items():
+            z.writestr("connections/followers_and_following/" + name, body)
+    with TestClient(main.app) as client:
+        assert client.post("/api/import", files={"files": ("export.zip", archive.getvalue())}).json()["status"] == "ok"
+        previous = store.metadata()
+        bad = client.post("/api/import", files={"files": ("following.json", b"broken")}).json()
+        assert bad["status"] == "error"
+        assert store.metadata() == previous
+
+
+@pytest.mark.parametrize("name", ["../followers.json", "profile.html", "nested/following.json"])
+def test_upload_rejects_unexpected_paths_and_formats(logged_in, name):
+    with TestClient(main.app) as client:
+        assert client.post("/api/import", files={"files": (name, b"[]")}).json()["status"] == "error"
+
+
+def test_upload_stream_limit_releases_job_lock(logged_in, monkeypatch):
+    import file_import
+    monkeypatch.setattr(file_import, "MAX_UPLOAD_BYTES", 128)
+    with TestClient(main.app) as client:
+        response = client.post("/api/import", files={"files": ("export.zip", b"x" * 256)})
+        assert response.status_code == 413
+        assert response.json()["code"] == "upload_too_large"
+    assert state.try_start_job()
+    state.finish_job()

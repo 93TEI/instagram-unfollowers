@@ -233,6 +233,9 @@
             white-space: nowrap;
             flex-shrink: 0;
         }
+        .drop-zone { border: 1px dashed #a8a8a8; border-radius: 6px; padding: 16px; margin-top: 16px; text-align: center; }
+        .drop-zone.dragging { border-color: #0095f6; background: #f0f8ff; }
+        .drop-zone input { max-width: 100%; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -276,6 +279,11 @@
             <div id="fetch-error" class="error hidden" role="alert"></div>
             <button id="fetch-btn" class="fetch-btn" onclick="doFetch()">맞팔 안한 목록</button>
             <button id="refresh-btn" onclick="doRefresh()">JSON 갱신</button>
+            <div id="drop-zone" class="drop-zone">
+                <label for="import-files">ZIP·JSON 가져오기</label>
+                <input id="import-files" type="file" accept=".zip,.json" multiple onchange="doImport(this.files)">
+                <p class="info">파일을 여기에 놓아도 됩니다. 한 번의 내보내기에 속한 파일을 모두 선택하세요.</p>
+            </div>
             <button id="logout-btn" class="logout-btn" onclick="doLogout()">로그아웃</button>
         </div>
         <div id="list-view" class="hidden list-view">
@@ -339,6 +347,25 @@
         function setPending(value) {
             operationPending = value;
             ["fetch-btn", "refresh-btn", "logout-btn"].forEach(id => document.getElementById(id).disabled = value);
+            document.getElementById("import-files").disabled = value;
+        }
+        async function doImport(files) {
+            if (operationPending || !files.length) return;
+            if (files.length > 100 || Array.from(files).reduce((n, f) => n + f.size, 0) > 100 * 1024 * 1024) {
+                showError("fetch-error", "파일은 최대 100개, 합계 100MB까지 가져올 수 있습니다."); return;
+            }
+            setPending(true);
+            hideError("fetch-error");
+            try {
+                const body = new FormData();
+                for (const file of files) body.append("files", file);
+                const response = await fetch("/api/import", {method: "POST", body});
+                const data = await response.json();
+                if (data.status !== "ok") { showError("fetch-error", data.message); return; }
+                await updateStatus();
+                document.getElementById("export-info").textContent = "파일을 가져왔습니다. 맞팔 안한 목록을 눌러 확인하세요.";
+            } catch (_) { showError("fetch-error", "파일을 가져오지 못했습니다. 기존 자료는 유지됩니다."); }
+            finally { setPending(false); document.getElementById("import-files").value = ""; }
         }
         async function doLogin() {
             const username = document.getElementById("username").value.trim();
@@ -522,6 +549,10 @@
         }
         document.getElementById("password").addEventListener("keydown", e => { if (e.key === "Enter" && !document.getElementById("login-btn").disabled) doLogin(); });
         document.getElementById("twofa-code").addEventListener("keydown", e => { if (e.key === "Enter" && !document.getElementById("twofa-btn").disabled) doVerify(); });
+        const dropZone = document.getElementById("drop-zone");
+        dropZone.addEventListener("dragover", event => { event.preventDefault(); dropZone.classList.add("dragging"); });
+        dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragging"));
+        dropZone.addEventListener("drop", event => { event.preventDefault(); dropZone.classList.remove("dragging"); doImport(event.dataTransfer.files); });
         updateStatus().then(data => {
             if (data.logged_in) {
                 document.getElementById("display-username").textContent = data.username ? "@" + data.username : "저장된 계정";

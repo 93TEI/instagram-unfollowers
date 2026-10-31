@@ -3,7 +3,7 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -14,6 +14,8 @@ from instagram import logout as ig_logout
 from instagram import refresh_json_export, get_export_status
 from instagram import try_resume_session, verify_2fa as ig_verify_2fa
 from state import app_state, try_start_job, finish_job
+import instagram
+from file_import import UploadLimitMiddleware, import_files
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -32,6 +34,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(UploadLimitMiddleware)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -113,3 +116,10 @@ async def api_logout():
         ig_logout()
         return {"status": "ok"}
     return await run_auth(run)
+
+
+@app.post("/api/import")
+async def api_import(request: Request):
+    if not app_state["logged_in"]:
+        return {"status": "login_required", "message": "로그인이 필요합니다."}
+    return await import_files(request, instagram._store(), app_state["username"])

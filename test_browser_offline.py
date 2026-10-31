@@ -185,3 +185,52 @@ def test_app_username_only_search_and_no_image_or_poll_requests(browser):
     assert not any('instagram.com' in path or '.jpg' in path for path in calls)
     assert not errors
     context.close()
+
+
+def offline_app(browser, responses):
+    context = browser.new_context(service_workers='block', accept_downloads=True)
+    calls = []
+    def route(r):
+        url = r.request.url
+        if not url.startswith('https://app.invalid/'):
+            r.abort(); return
+        path = url.removeprefix('https://app.invalid')
+        calls.append((path, r.request.method))
+        if path == '/':
+            r.fulfill(content_type='text/html', body=Path('static/index.html').read_text())
+        elif path in responses:
+            value = responses[path]
+            r.fulfill(json=value(r) if callable(value) else value)
+        else:
+            r.abort()
+    context.route('**/*', route)
+    page = context.new_page()
+    page.goto('https://app.invalid/')
+    return context, page, calls
+
+
+def test_file_picker_and_drop_upload_locally(browser):
+    uploads = []
+    def uploaded(route):
+        uploads.append(route.request.post_data_buffer)
+        return {'status': 'ok', 'count': 0, 'users': []}
+    context, page, calls = offline_app(browser, {
+        '/api/status': {'logged_in': True, 'username': 'test_account', 'export': {'phase': 'idle'}},
+        '/api/import': uploaded,
+    })
+    page.locator('#import-files').set_input_files([
+        {'name': 'following.json', 'mimeType': 'application/json', 'buffer': b'[]'},
+        {'name': 'followers_1.json', 'mimeType': 'application/json', 'buffer': b'[]'},
+    ])
+    page.get_by_text('파일을 가져왔습니다. 맞팔 안한 목록을 눌러 확인하세요.').wait_for()
+    assert len(uploads) == 1 and b'following.json' in uploads[0]
+    assert b'account_id' not in uploads[0]
+    page.evaluate('''() => {
+        const data = new DataTransfer();
+        data.items.add(new File(['[]'], 'followers_1.json', {type:'application/json'}));
+        document.getElementById('drop-zone').dispatchEvent(new DragEvent('drop', {dataTransfer:data, bubbles:true}));
+    }''')
+    page.wait_for_function("!operationPending")
+    assert len(uploads) == 2
+    assert all(path in ('/', '/api/status', '/api/import') for path, method in calls)
+    context.close()
