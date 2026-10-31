@@ -13,7 +13,9 @@ from export_data import ExportError
 
 logger = logging.getLogger(__name__)
 CHECK_INTERVAL = 30 * 60
-ACTIVE_PHASES = {"preparing", "submitted", "pending", "uncertain", "downloading", "downloaded"}
+# preparing is persisted BEFORE provider.request. Only the before_submit marker
+# makes a request possibly submitted; an interrupted preparation can start again.
+ACTIVE_PHASES = {"submitted", "pending", "uncertain", "downloading", "downloaded"}
 
 
 @contextmanager
@@ -53,7 +55,7 @@ def refresh(store, username, provider, now=None):
         if remaining > 0:
             return {"status": "pending", "message": job.get("message") or "같은 요청의 반복을 막기 위해 잠시 기다립니다.",
                     "retry_after": int(remaining) + 1}
-        continuing = job.get("phase") in ACTIVE_PHASES
+        continuing = job.get("phase") in ACTIVE_PHASES or "submitted_at" in job
         if not continuing:
             job = {"generation": uuid.uuid4().hex}
         job.update({"phase": "pending" if continuing else "preparing", "last_attempt_at": now,

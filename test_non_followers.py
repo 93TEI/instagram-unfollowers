@@ -251,6 +251,30 @@ def test_timeout_after_submission_does_not_resubmit(store):
     assert provider.requests == 1 and provider.checks == 1
 
 
+def test_crash_before_submission_restarts_preparation_not_readiness(store):
+    provider = Provider()
+    provider.request = Mock(side_effect=KeyboardInterrupt())
+    with pytest.raises(KeyboardInterrupt):
+        export_jobs.refresh(store, "test_account", provider, now=100)
+    assert store.read_state()["phase"] == "preparing"
+    assert "submitted_at" not in store.read_state()
+    restarted = ExportStore("12345", store.directory.parent)
+    next_provider = Provider()
+    export_jobs.refresh(restarted, "test_account", next_provider, now=101)
+    assert next_provider.requests == next_provider.checks == 0
+    export_jobs.refresh(restarted, "test_account", next_provider, now=1901)
+    assert next_provider.requests == 1 and next_provider.checks == 0
+    assert restarted.read_state()["phase"] == "pending"
+
+
+def test_submission_marker_wins_over_inconsistent_preparing_phase(store):
+    store.write_state({"phase": "preparing", "submitted_at": 100,
+                       "generation": "a" * 32, "existing_exports": ["old-export"]})
+    provider = Provider()
+    export_jobs.refresh(store, "test_account", provider, now=2000)
+    assert provider.requests == 0 and provider.checks == 1
+
+
 def test_failed_ui_before_submit_can_retry_but_not_immediately(store):
     provider = Provider()
     provider.request = Mock(side_effect=ExportUIError("화면 변경"))
