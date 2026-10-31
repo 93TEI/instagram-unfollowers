@@ -50,7 +50,10 @@ def status():
         store = selected_store()
         metadata = store.metadata()
         return {"source": store.directory.name, "sources": items, "has_data": metadata is not None,
-                "saved_at": metadata.get("saved_at") if metadata else None}
+                "saved_at": metadata.get("saved_at") if metadata else None,
+                "following_count": metadata.get("following_count") if metadata else None,
+                "followers_count": metadata.get("followers_count") if metadata else None,
+                "validation": metadata.get("validation") if metadata else None}
     except (ExportError, OSError) as exc:
         return {"source": None, "sources": items, "has_data": False,
                 "message": str(exc) if isinstance(exc, ExportError) else "자료 기록을 읽을 수 없습니다."}

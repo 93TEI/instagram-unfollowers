@@ -119,6 +119,33 @@ def test_gap_in_numbered_files_is_rejected():
         compare_files(data)
 
 
+def test_validation_never_claims_completeness_when_last_part_is_missing():
+    data = files()
+    del data["followers_2.json"]
+    result = compare_files(data)
+    report = result["validation"]
+    assert report["format"] == report["numbering"] == "passed"
+    assert report["completeness"] == "unverified"
+    assert "마지막 분할 파일" in report["note"]
+    assert {item["name"] for item in report["files"]} == set(data)
+
+
+def test_validation_report_counts_entries_without_inflating_accounts():
+    data = {"following.json": content([entry("Amy"), entry("AMY")]), "followers.json": b"[]"}
+    result = compare_files(data)
+    assert result["following_count"] == 1
+    report = next(item for item in result["validation"]["files"] if item["relation"] == "following")
+    assert report["records"] == 2 and report["unique_accounts"] == 1
+
+
+def test_validation_is_available_in_status_after_import(logged_in):
+    with TestClient(main.app) as client:
+        client.post("/api/import", files=[("files", (name, body)) for name, body in files().items()])
+        info = client.get("/api/status").json()["data"]
+        assert info["validation"]["completeness"] == "unverified"
+        assert len(info["validation"]["files"]) == 3
+
+
 def test_mixed_single_and_numbered_lists_rejected():
     data = files()
     data["followers.json"] = b"[]"

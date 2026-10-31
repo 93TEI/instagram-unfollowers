@@ -251,3 +251,17 @@ def test_home_and_local_comparison_work_without_login(browser):
     assert page.locator('#list-user-list').inner_text() == '@alice'
     assert not any(path in ('/api/login', '/api/export/refresh') for path, method in calls)
     context.close()
+
+
+def test_validation_shows_counts_files_and_unverified_coverage(browser):
+    data = {'source': 'local', 'sources': [{'id': 'local', 'label': '가져온 파일'}],
+            'following_count': 3, 'followers_count': 2,
+            'validation': {'note': '마지막 분할 파일 누락은 확인할 수 없습니다.',
+                           'files': [{'name': 'followers_1.json', 'records': 2}]}}
+    context, page, calls = offline_app(browser, {'/api/status': {'logged_in': False, 'data': data}})
+    page.locator('#data-validation summary').click()
+    assert '팔로잉 3명 / 팔로워 2명' in page.locator('#data-validation').inner_text()
+    assert '전체 자료 여부는 미확인' in page.locator('#data-validation').inner_text()
+    assert 'followers_1.json: 2개 항목' in page.locator('#data-validation').inner_text()
+    assert not any(method == 'POST' for path, method in calls)
+    context.close()

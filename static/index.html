@@ -278,6 +278,7 @@
             <label for="data-source">비교할 자료</label>
             <select id="data-source" onchange="selectData(this.value)" style="width:100%;padding:10px;margin-top:8px"></select>
             <p id="snapshot-info" class="info">저장된 JSON을 확인합니다.</p>
+            <details id="data-validation" class="info hidden" style="text-align:left"></details>
             <p id="export-info" class="info" aria-live="polite"></p>
             <div id="fetch-error" class="error hidden" role="alert"></div>
             <button id="fetch-btn" class="fetch-btn" onclick="doFetch()">맞팔 안한 목록</button>
@@ -303,6 +304,7 @@
             <div id="list-result" class="hidden">
                 <p class="result-header" id="list-result-count"></p>
                 <p id="list-snapshot-info" class="info"></p>
+                <details id="list-validation" class="info hidden" style="text-align:left"></details>
                 <div class="user-list" id="list-user-list"></div>
             </div>
         </div>
@@ -329,6 +331,25 @@
         function savedText(savedAt) {
             return savedAt ? "JSON 저장: " + new Date(savedAt * 1000).toLocaleString() + " · 저장된 파일 기준" : "저장된 JSON이 없습니다.";
         }
+        function renderValidation(id, data) {
+            const element = document.getElementById(id);
+            element.replaceChildren();
+            element.classList.toggle("hidden", !data.validation);
+            if (!data.validation) return;
+            const summary = document.createElement("summary");
+            summary.textContent = `파일 검사 · 팔로잉 ${data.following_count}명 / 팔로워 ${data.followers_count}명 (중복 제거)`;
+            element.appendChild(summary);
+            const note = document.createElement("p");
+            note.textContent = "형식·분할 번호 검사 통과. 전체 자료 여부는 미확인입니다. " + data.validation.note;
+            element.appendChild(note);
+            const list = document.createElement("ul");
+            for (const file of data.validation.files || []) {
+                const item = document.createElement("li");
+                item.textContent = `${file.name}: ${file.records}개 항목`;
+                list.appendChild(item);
+            }
+            element.appendChild(list);
+        }
         async function api(path, options) {
             const response = await fetch(path, options);
             if (!response.ok) throw new Error("request failed");
@@ -353,6 +374,7 @@
             document.getElementById("logout-btn").classList.toggle("hidden", !isLoggedIn);
             document.getElementById("refresh-btn").classList.toggle("hidden", !isLoggedIn);
             document.getElementById("snapshot-info").textContent = savedText(local.saved_at);
+            renderValidation("data-validation", local);
             const wait = exp.retry_after > 0 ? ` (다음 확인까지 약 ${Math.ceil(exp.retry_after / 60)}분)` : "";
             document.getElementById("export-info").textContent = (local.message || exp.message || "") + wait;
             const active = ["submitted", "pending", "uncertain", "downloading", "downloaded"].includes(exp.phase);
@@ -556,6 +578,7 @@
                     renderUserList(fetchedUsers);
                     document.getElementById("list-result-count").textContent = "맞팔이 아닌 유저: " + data.count + "명";
                     document.getElementById("list-snapshot-info").textContent = savedText(data.saved_at);
+                    renderValidation("list-validation", data);
                     document.getElementById("list-result").classList.remove("hidden");
                     document.getElementById("list-toolbar").classList.remove("hidden");
                 } else if (data.status === "login_required") {

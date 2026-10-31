@@ -16,6 +16,7 @@ DATA_ROOT = Path(__file__).resolve().parent / "exports"
 MAX_JSON_BYTES = 100 * 1024 * 1024
 RELATION_FILE = re.compile(r"^(followers|following)(?:_([1-9][0-9]*))?\.json$")
 USERNAME = re.compile(r"^[a-zA-Z0-9_.]{1,30}$")
+COMPLETENESS_NOTE = "마지막 분할 파일 누락, 전체 기간 및 동일 계정 여부는 JSON만으로 확인할 수 없습니다. 한 번의 내보내기에 속한 모든 파일인지 확인해주세요."
 
 
 class ExportError(ValueError):
@@ -93,16 +94,22 @@ def _validate_files(files):
 def compare_files(files):
     _validate_files(files)
     groups = {"following": set(), "followers": set()}
+    inspected = []
     for name, content in files.items():
         relation = RELATION_FILE.fullmatch(name).group(1)
         try:
             data = json.loads(content.decode("utf-8-sig"))
         except (ValueError, UnicodeError) as exc:
             raise ExportError(f"{name} 파일을 JSON으로 읽을 수 없습니다.") from exc
-        groups[relation].update(parse_usernames(data, relation))
+        names = parse_usernames(data, relation)
+        groups[relation].update(names)
+        rows = data.get("relationships_" + relation) if isinstance(data, dict) else data
+        inspected.append({"name": name, "relation": relation, "records": len(rows), "unique_accounts": len(names)})
     users = [{"username": name} for name in sorted(groups["following"] - groups["followers"])]
     return {"status": "ok", "count": len(users), "users": users,
-            "following_count": len(groups["following"]), "followers_count": len(groups["followers"])}
+            "following_count": len(groups["following"]), "followers_count": len(groups["followers"]),
+            "validation": {"format": "passed", "numbering": "passed", "completeness": "unverified",
+                           "files": sorted(inspected, key=lambda item: item["name"]), "note": COMPLETENESS_NOTE}}
 
 
 def fingerprint(files):
@@ -209,7 +216,7 @@ class ExportStore:
                     shutil.rmtree(temporary)
         metadata = {"snapshot": snapshot, "saved_at": time.time(), "username": username,
                     "files": sorted(files), "following_count": result["following_count"],
-                    "followers_count": result["followers_count"]}
+                    "followers_count": result["followers_count"], "validation": result["validation"]}
         previous = self.metadata()
         if previous and previous.get("snapshot") == snapshot:
             metadata["saved_at"] = previous["saved_at"]
