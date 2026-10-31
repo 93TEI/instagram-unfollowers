@@ -6,3 +6,5 @@ venv/
 __pycache__/
 nohup.out
 server.log
+exports/
+.pytest_cache/
