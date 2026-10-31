@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 
 import export_data
 import export_jobs
+import data_library
 import instagram
 import main
 import state
@@ -52,6 +53,8 @@ def store(tmp_path):
 
 @pytest.fixture
 def logged_in(monkeypatch, store):
+    monkeypatch.setattr(export_data, "DATA_ROOT", store.directory.parent)
+    data_library.select_source("12345", require_data=False)
     monkeypatch.setattr(state, "_job_lock", threading.Lock())
     monkeypatch.setattr(instagram, "_store", lambda: store)
     monkeypatch.setattr(instagram, "cl", SimpleNamespace(sessionid="fake-session", password=None))
@@ -339,9 +342,9 @@ def test_durable_submit_marker_written_before_network_commit(store):
     assert store.read_state()["phase"] == "submitted"
 
 
-def test_fetch_requires_login_but_does_not_call_client(monkeypatch, logged_in):
+def test_fetch_without_login_does_not_call_client(monkeypatch, logged_in):
     monkeypatch.setitem(state.app_state, "logged_in", False)
-    assert instagram.fetch_non_followers()["status"] == "login_required"
+    assert instagram.fetch_non_followers()["status"] == "no_data"
 
 
 def test_http_contract_and_removed_mutations(logged_in, store, tmp_path):
@@ -423,10 +426,10 @@ def test_upload_zip_and_failed_import_preserve_previous_data(logged_in, store):
             z.writestr("connections/followers_and_following/" + name, body)
     with TestClient(main.app) as client:
         assert client.post("/api/import", files={"files": ("export.zip", archive.getvalue())}).json()["status"] == "ok"
-        previous = store.metadata()
+        previous = data_library.local_store().metadata()
         bad = client.post("/api/import", files={"files": ("following.json", b"broken")}).json()
         assert bad["status"] == "error"
-        assert store.metadata() == previous
+        assert data_library.local_store().metadata() == previous
 
 
 @pytest.mark.parametrize("name", ["../followers.json", "profile.html", "nested/following.json"])
@@ -444,3 +447,32 @@ def test_upload_stream_limit_releases_job_lock(logged_in, monkeypatch):
         assert response.json()["code"] == "upload_too_large"
     assert state.try_start_job()
     state.finish_job()
+
+
+def test_offline_import_compare_and_restart_never_construct_client(logged_in, monkeypatch):
+    monkeypatch.setitem(state.app_state, "logged_in", False)
+    client_factory = Mock(side_effect=AssertionError("Instagram client must not be constructed"))
+    monkeypatch.setattr(instagram, "_client", client_factory)
+    with TestClient(main.app) as client:
+        result = client.post("/api/import", files=[("files", (name, body)) for name, body in files().items()]).json()
+        assert result["status"] == "ok"
+        assert client.post("/api/fetch").json()["users"] == [{"username": "zoe"}]
+        assert client.get("/api/status").json()["data"]["source"] == "local"
+    with TestClient(main.app) as restarted:
+        assert restarted.post("/api/fetch").json()["count"] == 1
+        assert restarted.post("/api/export/refresh").json()["status"] == "login_required"
+    client_factory.assert_not_called()
+
+
+def test_data_selection_is_independent_of_login_and_logout(logged_in, store, tmp_path, monkeypatch):
+    store.import_sources([write_export(tmp_path / "account")], "test_account")
+    data_library.local_store().import_sources([write_export(tmp_path / "local", {"following.json": b"[]", "followers.json": b"[]"})], "")
+    data_library.select_source("local")
+    monkeypatch.setattr(main, "ig_logout", lambda: state.app_state.update(logged_in=False, user_id=None, username=None))
+    with TestClient(main.app) as client:
+        assert client.post("/api/fetch").json()["count"] == 0
+        assert client.post("/api/logout").json()["status"] == "ok"
+        assert client.get("/api/status").json()["data"]["source"] == "local"
+        assert client.post("/api/data/select", json={"source": "12345"}).json()["status"] == "ok"
+        assert client.post("/api/fetch").json()["count"] == 1
+        assert client.post("/api/data/select", json={"source": "../../session.json"}).json()["status"] == "error"

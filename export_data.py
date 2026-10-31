@@ -160,7 +160,7 @@ def read_sources(paths):
 
 class ExportStore:
     def __init__(self, account_id, root=None):
-        if not re.fullmatch(r"[0-9]+", str(account_id or "")):
+        if account_id != "local" and not re.fullmatch(r"[0-9]+", str(account_id or "")):
             raise ExportError("로그인 계정 정보를 확인할 수 없습니다.")
         self.directory = Path(root if root is not None else DATA_ROOT) / str(account_id)
 
@@ -236,7 +236,7 @@ class ExportStore:
     def compare(self):
         metadata = self.metadata()
         if metadata is None:
-            return {"status": "no_data", "message": "저장된 JSON이 없습니다. JSON 갱신으로 내보내기를 시작하세요."}
+            return {"status": "no_data", "message": "저장된 JSON이 없습니다. ZIP·JSON 가져오기로 파일을 선택하세요."}
         directory = self.directory / "snapshots" / metadata["snapshot"]
         try:
             files = read_sources([directory])

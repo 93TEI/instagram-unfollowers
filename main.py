@@ -15,6 +15,8 @@ from instagram import refresh_json_export, get_export_status
 from instagram import try_resume_session, verify_2fa as ig_verify_2fa
 from state import app_state, try_start_job, finish_job
 import instagram
+import data_library
+from export_data import ExportError
 from file_import import UploadLimitMiddleware, import_files
 
 logging.basicConfig(level=logging.INFO)
@@ -53,6 +55,10 @@ class VerifyRequest(BaseModel):
     code: str
 
 
+class SourceRequest(BaseModel):
+    source: str
+
+
 @app.get("/")
 async def index():
     return FileResponse("static/index.html")
@@ -87,6 +93,7 @@ async def api_status():
         "job_status": app_state["job_status"],
         "error": app_state["error"],
         "export": get_export_status(),
+        "data": data_library.status(),
     }
 
 
@@ -120,6 +127,17 @@ async def api_logout():
 
 @app.post("/api/import")
 async def api_import(request: Request):
-    if not app_state["logged_in"]:
-        return {"status": "login_required", "message": "로그인이 필요합니다."}
-    return await import_files(request, instagram._store(), app_state["username"])
+    return await import_files(request, data_library.local_store(), "",
+                              on_import=lambda: data_library.select_source("local"))
+
+
+@app.post("/api/data/select")
+async def api_select_source(req: SourceRequest):
+    def select():
+        try:
+            data_library.select_source(req.source)
+            app_state["non_followers"] = []
+            return {"status": "ok", "data": data_library.status()}
+        except (ExportError, OSError) as exc:
+            return {"status": "error", "message": str(exc) if isinstance(exc, ExportError) else "자료 선택을 저장하지 못했습니다."}
+    return await run_auth(select)

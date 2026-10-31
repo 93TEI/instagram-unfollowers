@@ -45,7 +45,7 @@ class UploadLimitMiddleware:
                                 "message": "가져올 파일의 합계가 100MB를 초과했습니다."}, status_code=413)(scope, receive, send)
 
 
-async def import_files(request, store, username):
+async def import_files(request, store, username, on_import=None):
     if not try_start_job():
         return {"status": "busy", "message": "다른 작업이 진행 중입니다."}
     try:
@@ -84,7 +84,12 @@ async def import_files(request, store, username):
                                     break
                                 target.write(chunk)
                         paths.append(path)
-                    return await run_in_threadpool(store.import_sources, paths, username)
+                    def save():
+                        result = store.import_sources(paths, username)
+                        if on_import:
+                            on_import()
+                        return result
+                    return await run_in_threadpool(save)
     except ExportError as exc:
         return {"status": "error", "code": "invalid_export", "message": str(exc)}
     except HTTPException as exc:

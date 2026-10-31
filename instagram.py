@@ -11,6 +11,7 @@ from export_browser import BrowserExporter
 from export_data import ExportError, ExportStore, atomic_json
 from export_jobs import refresh as refresh_export, status as export_status
 from state import app_state, finish_job, try_start_job
+import data_library
 
 logger = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -178,13 +179,11 @@ def _store():
 
 def fetch_non_followers(dry_run=False):
     """Read saved files only, including when dry_run is passed by older callers."""
-    if not app_state["logged_in"]:
-        return {"status": "login_required", "message": "로그인이 필요합니다."}
     if not try_start_job():
         return {"status": "busy", "message": "다른 작업이 진행 중입니다."}
     try:
         app_state["job_status"] = "comparing"
-        result = _store().compare()
+        result = data_library.selected_store().compare()
         app_state["non_followers"] = result.get("users", [])
         return result
     except (ExportError, OSError) as exc:

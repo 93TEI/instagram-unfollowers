@@ -234,3 +234,20 @@ def test_file_picker_and_drop_upload_locally(browser):
     assert len(uploads) == 2
     assert all(path in ('/', '/api/status', '/api/import') for path, method in calls)
     context.close()
+
+
+def test_home_and_local_comparison_work_without_login(browser):
+    context, page, calls = offline_app(browser, {
+        '/api/status': {'logged_in': False, 'export': {'phase': 'idle'},
+                        'data': {'source': 'local', 'sources': [{'id': 'local', 'label': '가져온 파일'}], 'saved_at': 123}},
+        '/api/fetch': {'status': 'ok', 'count': 1, 'users': [{'username': 'alice'}], 'saved_at': 123},
+    })
+    page.get_by_role('button', name='맞팔 안한 목록').wait_for()
+    assert page.locator('#import-files').is_visible()
+    assert not page.locator('#login-view').is_visible()
+    assert not page.locator('#refresh-btn').is_visible()
+    page.get_by_role('button', name='맞팔 안한 목록').click()
+    page.get_by_text('맞팔이 아닌 유저: 1명').wait_for()
+    assert page.locator('#list-user-list').inner_text() == '@alice'
+    assert not any(path in ('/api/login', '/api/export/refresh') for path, method in calls)
+    context.close()

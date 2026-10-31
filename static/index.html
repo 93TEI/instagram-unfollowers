@@ -243,7 +243,7 @@
         <h1>Instagram 맞팔 확인</h1>
 
         <!-- Login State -->
-        <div id="login-view">
+        <div id="login-view" class="hidden">
             <div class="form-group">
                 <input type="text" id="username" placeholder="사용자 이름" autocomplete="username">
             </div>
@@ -252,6 +252,7 @@
             </div>
             <button id="login-btn" onclick="doLogin()">로그인</button>
             <div id="login-error" class="error hidden"></div>
+            <button class="back-btn" onclick="showHome()">파일 비교로 돌아가기</button>
         </div>
 
         <!-- 2FA State -->
@@ -268,16 +269,19 @@
             <div id="twofa-error" class="error hidden"></div>
         </div>
 
-        <div id="loggedin-view" class="hidden">
+        <div id="loggedin-view">
             <div class="success">
-                <div class="check">&#10003;</div>
-                <p>로그인 완료!</p>
+                <div id="connection-check" class="check hidden">&#10003;</div>
+                <p id="connection-status">로컬 파일 비교</p>
                 <p class="username" id="display-username"></p>
             </div>
+            <label for="data-source">비교할 자료</label>
+            <select id="data-source" onchange="selectData(this.value)" style="width:100%;padding:10px;margin-top:8px"></select>
             <p id="snapshot-info" class="info">저장된 JSON을 확인합니다.</p>
             <p id="export-info" class="info" aria-live="polite"></p>
             <div id="fetch-error" class="error hidden" role="alert"></div>
             <button id="fetch-btn" class="fetch-btn" onclick="doFetch()">맞팔 안한 목록</button>
+            <button id="connect-btn" onclick="showView(loginView)">자동 내보내기용 로그인</button>
             <button id="refresh-btn" onclick="doRefresh()">JSON 갱신</button>
             <div id="drop-zone" class="drop-zone">
                 <label for="import-files">ZIP·JSON 가져오기</label>
@@ -309,6 +313,7 @@
         const loggedinView = document.getElementById("loggedin-view");
         const listView = document.getElementById("list-view");
         let operationPending = false;
+        let isLoggedIn = false;
         let fetchedUsers = [];
 
         function showView(view) {
@@ -332,22 +337,55 @@
         async function updateStatus() {
             const data = await api("/api/status");
             const exp = data.export || {};
-            document.getElementById("snapshot-info").textContent = savedText(exp.saved_at);
+            isLoggedIn = Boolean(data.logged_in);
+            const local = data.data || {source: "local", sources: [{id: "local", label: "가져온 파일"}], saved_at: exp.saved_at};
+            const sources = document.getElementById("data-source");
+            sources.replaceChildren();
+            for (const source of local.sources || []) {
+                const option = document.createElement("option");
+                option.value = source.id; option.textContent = source.label; sources.appendChild(option);
+            }
+            sources.value = local.source || "";
+            document.getElementById("display-username").textContent = isLoggedIn && data.username ? "@" + data.username : "";
+            document.getElementById("connection-status").textContent = isLoggedIn ? "계정 연결됨" : "로컬 파일 비교";
+            document.getElementById("connection-check").classList.toggle("hidden", !isLoggedIn);
+            document.getElementById("connect-btn").classList.toggle("hidden", isLoggedIn);
+            document.getElementById("logout-btn").classList.toggle("hidden", !isLoggedIn);
+            document.getElementById("refresh-btn").classList.toggle("hidden", !isLoggedIn);
+            document.getElementById("snapshot-info").textContent = savedText(local.saved_at);
             const wait = exp.retry_after > 0 ? ` (다음 확인까지 약 ${Math.ceil(exp.retry_after / 60)}분)` : "";
-            document.getElementById("export-info").textContent = (exp.message || "") + wait;
+            document.getElementById("export-info").textContent = (local.message || exp.message || "") + wait;
             const active = ["submitted", "pending", "uncertain", "downloading", "downloaded"].includes(exp.phase);
             document.getElementById("refresh-btn").textContent = active ? "JSON 준비 확인" : "JSON 갱신";
             return data;
         }
-        function showLoggedIn(username) {
-            document.getElementById("display-username").textContent = username ? "@" + username : "저장된 계정";
+        function showHome() {
             showView(loggedinView);
             updateStatus().catch(() => showError("fetch-error", "저장 상태를 확인하지 못했습니다."));
+        }
+        function showLoggedIn(username) {
+            isLoggedIn = true;
+            document.getElementById("password").value = "";
+            showHome();
+        }
+        async function selectData(source) {
+            if (operationPending) return;
+            setPending(true);
+            try {
+                const data = await api("/api/data/select", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({source})});
+                if (data.status !== "ok") showError("fetch-error", data.message);
+                fetchedUsers = []; document.getElementById("list-user-list").replaceChildren();
+                await updateStatus();
+            } catch (_) { showError("fetch-error", "자료를 선택하지 못했습니다."); }
+            finally { setPending(false); }
         }
         function setPending(value) {
             operationPending = value;
             ["fetch-btn", "refresh-btn", "logout-btn"].forEach(id => document.getElementById(id).disabled = value);
             document.getElementById("import-files").disabled = value;
+            document.getElementById("data-source").disabled = value;
+            document.getElementById("connect-btn").disabled = value;
+            document.getElementById("refresh-btn").disabled = value || !isLoggedIn;
         }
         async function doImport(files) {
             if (operationPending || !files.length) return;
@@ -475,7 +513,8 @@
                 document.getElementById("list-user-list").replaceChildren();
                 document.getElementById("username").value = "";
                 document.getElementById("password").value = "";
-                showView(loginView);
+                isLoggedIn = false;
+                showHome();
             } catch (_) { showError("fetch-error", "로그아웃하지 못했습니다."); }
             finally { setPending(false); }
         }
@@ -553,12 +592,8 @@
         dropZone.addEventListener("dragover", event => { event.preventDefault(); dropZone.classList.add("dragging"); });
         dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragging"));
         dropZone.addEventListener("drop", event => { event.preventDefault(); dropZone.classList.remove("dragging"); doImport(event.dataTransfer.files); });
-        updateStatus().then(data => {
-            if (data.logged_in) {
-                document.getElementById("display-username").textContent = data.username ? "@" + data.username : "저장된 계정";
-                showView(loggedinView);
-            }
-        }).catch(() => showError("login-error", "앱 서버에 연결하지 못했습니다."));
+        updateStatus().then(() => showView(loggedinView))
+            .catch(() => showError("fetch-error", "앱 서버에 연결하지 못했습니다."));
     </script>
 </body>
 </html>
