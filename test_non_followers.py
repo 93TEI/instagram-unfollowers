@@ -168,7 +168,9 @@ def test_reimport_is_idempotent_and_keeps_snapshot_timestamp(store, tmp_path):
     source = write_export(tmp_path / "source")
     first = store.import_sources([source], "test_account")
     second = store.import_sources([source], "test_account")
-    assert first == second
+    assert first["users"] == second["users"]
+    assert first["saved_at"] == second["saved_at"]
+    assert second["imported_at"] >= first["imported_at"]
     assert len(list((store.directory / "snapshots").iterdir())) == 1
 
 
@@ -503,3 +505,42 @@ def test_data_selection_is_independent_of_login_and_logout(logged_in, store, tmp
         assert client.post("/api/data/select", json={"source": "12345"}).json()["status"] == "ok"
         assert client.post("/api/fetch").json()["count"] == 1
         assert client.post("/api/data/select", json={"source": "../../session.json"}).json()["status"] == "error"
+
+
+def test_export_date_is_user_supplied_and_separate_from_import_time(store, tmp_path, monkeypatch):
+    source = write_export(tmp_path / 'source')
+    monkeypatch.setattr(export_data.time, 'time', lambda: 1000)
+    result = store.import_sources([source], 'test_account', exported_at='1970-01-01T09:10:00+09:00')
+    assert result['imported_at'] == 1000
+    assert result['exported_at'] == 600
+    assert result['exported_at_source'] == 'user'
+    assert store.compare()['exported_at'] == 600
+
+
+def test_follow_timestamps_are_never_used_as_export_creation_date(store, tmp_path):
+    result = store.import_sources([write_export(tmp_path / 'source')], 'test_account')
+    assert result['exported_at'] is None
+    assert result['exported_at_source'] == 'unknown'
+    assert result['imported_at'] > 123
+
+
+@pytest.mark.parametrize('date', ['not a date', '2020-01-01', '2999-01-01T00:00:00Z', '1960-01-01T00:00:00Z'])
+def test_bad_date_does_not_replace_snapshot(store, tmp_path, date):
+    source = write_export(tmp_path / 'source')
+    store.import_sources([source], 'test_account')
+    before = store.metadata()
+    with pytest.raises(ExportError, match='생성 시각'):
+        store.import_sources([source], 'test_account', exported_at=date)
+    assert store.metadata() == before
+
+
+def test_legacy_saved_time_does_not_become_verified_export_date(store, tmp_path):
+    store.import_sources([write_export(tmp_path / 'source')], 'test_account')
+    metadata = store.metadata()
+    for key in ('imported_at', 'exported_at', 'exported_at_source'):
+        metadata.pop(key)
+    export_data.atomic_json(store.directory / 'current.json', metadata)
+    result = store.compare()
+    assert result['saved_at'] == metadata['saved_at']
+    assert result['imported_at'] is result['exported_at'] is None
+    assert result['exported_at_source'] == 'unknown'

@@ -10,6 +10,7 @@ import tempfile
 import time
 import zipfile
 from pathlib import Path, PurePosixPath
+from datetime import datetime
 from urllib.parse import unquote, urlparse
 
 DATA_ROOT = Path(__file__).resolve().parent / "exports"
@@ -21,6 +22,30 @@ COMPLETENESS_NOTE = "마지막 분할 파일 누락, 전체 기간 및 동일 �
 
 class ExportError(ValueError):
     pass
+
+
+def parse_export_date(value):
+    if value in (None, ""):
+        return None
+    try:
+        if not isinstance(value, str):
+            raise ValueError()
+        date = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if date.tzinfo is None:
+            raise ValueError()
+        timestamp = date.timestamp()
+        if timestamp < 0 or timestamp > time.time() + 300:
+            raise ValueError()
+        return timestamp
+    except (ValueError, OverflowError) as exc:
+        raise ExportError("내보내기 생성 시각을 확인해주세요. 시간대가 포함된 날짜여야 하며 미래 시각은 사용할 수 없습니다.") from exc
+
+
+def snapshot_times(metadata):
+    return {"saved_at": metadata.get("saved_at"),
+            "imported_at": metadata.get("imported_at"),
+            "exported_at": metadata.get("exported_at"),
+            "exported_at_source": metadata.get("exported_at_source", "unknown")}
 
 
 def atomic_json(path, data):
@@ -193,7 +218,8 @@ class ExportStore:
     def write_state(self, data):
         atomic_json(self.directory / "job.json", data)
 
-    def import_sources(self, paths, username):
+    def import_sources(self, paths, username, exported_at=None):
+        export_date = parse_export_date(exported_at)
         files = read_sources(paths)
         result = compare_files(files)  # Validate everything before replacing a good snapshot.
         snapshot = fingerprint(files)
@@ -214,14 +240,16 @@ class ExportStore:
             finally:
                 if temporary.exists():
                     shutil.rmtree(temporary)
-        metadata = {"snapshot": snapshot, "saved_at": time.time(), "username": username,
+        imported_at = time.time()
+        metadata = {"snapshot": snapshot, "saved_at": imported_at, "imported_at": imported_at,
+                    "exported_at": export_date, "exported_at_source": "user" if export_date is not None else "unknown", "username": username,
                     "files": sorted(files), "following_count": result["following_count"],
                     "followers_count": result["followers_count"], "validation": result["validation"]}
         previous = self.metadata()
         if previous and previous.get("snapshot") == snapshot:
             metadata["saved_at"] = previous["saved_at"]
         atomic_json(self.directory / "current.json", metadata)
-        return {**result, "saved_at": metadata["saved_at"]}
+        return {**result, **snapshot_times(metadata)}
 
     def metadata(self):
         try:
@@ -230,6 +258,9 @@ class ExportStore:
                 raise ValueError()
             if not isinstance(data.get("saved_at"), (int, float)) or not math.isfinite(data["saved_at"]):
                 raise ValueError()
+            for key in ("imported_at", "exported_at"):
+                if data.get(key) is not None and (not isinstance(data[key], (int, float)) or not math.isfinite(data[key]) or data[key] < 0):
+                    raise ValueError()
             if not isinstance(data.get("files"), list) or not data["files"] or any(
                 not isinstance(name, str) or not RELATION_FILE.fullmatch(name) for name in data["files"]
             ):
@@ -252,4 +283,4 @@ class ExportStore:
         if sorted(files) != metadata["files"] or fingerprint(files) != metadata["snapshot"]:
             raise ExportError("저장된 JSON 파일이 누락되거나 변경되었습니다.")
         result = compare_files(files)
-        return {**result, "saved_at": metadata["saved_at"]}
+        return {**result, **snapshot_times(metadata)}

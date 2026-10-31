@@ -265,3 +265,17 @@ def test_validation_shows_counts_files_and_unverified_coverage(browser):
     assert 'followers_1.json: 2개 항목' in page.locator('#data-validation').inner_text()
     assert not any(method == 'POST' for path, method in calls)
     context.close()
+
+
+def test_export_and_import_times_are_distinct_and_unknown_is_explicit(browser):
+    context, page, calls = offline_app(browser, {'/api/status': {
+        'logged_in': False, 'data': {'source': 'local', 'sources': [],
+                                     'saved_at': 1000, 'imported_at': 2000, 'exported_at': 600, 'exported_at_source': 'user'}}})
+    page.wait_for_function("document.getElementById('snapshot-info').textContent.includes('직접 입력')")
+    text = page.locator('#snapshot-info').inner_text()
+    assert '가져온 시각:' in text and '내보내기 생성 시각:' in text
+    assert '(직접 입력)' in text and '실시간 상태가 아닙니다.' in text
+    legacy = page.evaluate('savedText({saved_at: 1000})')
+    assert '기존 파일 저장 기록:' in legacy
+    assert '내보내기 생성 시각: 미확인' in legacy
+    context.close()

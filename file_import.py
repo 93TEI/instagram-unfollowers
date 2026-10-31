@@ -85,7 +85,7 @@ async def import_files(request, store, username, on_import=None):
                                 target.write(chunk)
                         paths.append(path)
                     def save():
-                        result = store.import_sources(paths, username)
+                        result = store.import_sources(paths, username, exported_at=form.get("exported_at"))
                         if on_import:
                             on_import()
                         return result

@@ -286,6 +286,11 @@
             <button id="refresh-btn" onclick="doRefresh()">JSON 갱신</button>
             <div id="drop-zone" class="drop-zone">
                 <label for="import-files">ZIP·JSON 가져오기</label>
+                <details class="info"><summary>내보내기 생성 시각 입력 (선택)</summary>
+                    <label for="exported-at">파일 생성 시각을 알고 있을 때만 입력하세요.</label>
+                    <input id="exported-at" type="datetime-local">
+                    <p>팔로우한 날짜나 파일을 받은 날짜가 아닙니다. 모르면 비워두세요.</p>
+                </details>
                 <input id="import-files" type="file" accept=".zip,.json" multiple onchange="doImport(this.files)">
                 <p class="info">파일을 여기에 놓아도 됩니다. 한 번의 내보내기에 속한 파일을 모두 선택하세요.</p>
             </div>
@@ -328,8 +333,13 @@
             el.classList.remove("hidden");
         }
         function hideError(id) { document.getElementById(id).classList.add("hidden"); }
-        function savedText(savedAt) {
-            return savedAt ? "JSON 저장: " + new Date(savedAt * 1000).toLocaleString() + " · 저장된 파일 기준" : "저장된 JSON이 없습니다.";
+        function savedText(data) {
+            if (!data.saved_at && !data.imported_at) return "저장된 JSON이 없습니다.";
+            const imported = data.imported_at ? "가져온 시각: " + new Date(data.imported_at * 1000).toLocaleString()
+                : "기존 파일 저장 기록: " + new Date(data.saved_at * 1000).toLocaleString();
+            const exported = data.exported_at ? new Date(data.exported_at * 1000).toLocaleString() + " (직접 입력)" : "미확인";
+            const age = data.exported_at ? Math.max(0, Math.floor((Date.now() / 1000 - data.exported_at) / 86400)) : null;
+            return imported + " · 내보내기 생성 시각: " + exported + (age > 0 ? ` · 생성 후 ${age}일 경과` : "") + " · 실시간 상태가 아닙니다.";
         }
         function renderValidation(id, data) {
             const element = document.getElementById(id);
@@ -373,7 +383,7 @@
             document.getElementById("connect-btn").classList.toggle("hidden", isLoggedIn);
             document.getElementById("logout-btn").classList.toggle("hidden", !isLoggedIn);
             document.getElementById("refresh-btn").classList.toggle("hidden", !isLoggedIn);
-            document.getElementById("snapshot-info").textContent = savedText(local.saved_at);
+            document.getElementById("snapshot-info").textContent = savedText(local);
             renderValidation("data-validation", local);
             const wait = exp.retry_after > 0 ? ` (다음 확인까지 약 ${Math.ceil(exp.retry_after / 60)}분)` : "";
             document.getElementById("export-info").textContent = (local.message || exp.message || "") + wait;
@@ -418,11 +428,14 @@
             hideError("fetch-error");
             try {
                 const body = new FormData();
+                const date = document.getElementById("exported-at").value;
+                if (date) body.append("exported_at", new Date(date).toISOString());
                 for (const file of files) body.append("files", file);
                 const response = await fetch("/api/import", {method: "POST", body});
                 const data = await response.json();
                 if (data.status !== "ok") { showError("fetch-error", data.message); return; }
                 await updateStatus();
+                document.getElementById("exported-at").value = "";
                 document.getElementById("export-info").textContent = "파일을 가져왔습니다. 맞팔 안한 목록을 눌러 확인하세요.";
             } catch (_) { showError("fetch-error", "파일을 가져오지 못했습니다. 기존 자료는 유지됩니다."); }
             finally { setPending(false); document.getElementById("import-files").value = ""; }
@@ -577,7 +590,7 @@
                     fetchedUsers = data.users;
                     renderUserList(fetchedUsers);
                     document.getElementById("list-result-count").textContent = "맞팔이 아닌 유저: " + data.count + "명";
-                    document.getElementById("list-snapshot-info").textContent = savedText(data.saved_at);
+                    document.getElementById("list-snapshot-info").textContent = savedText(data);
                     renderValidation("list-validation", data);
                     document.getElementById("list-result").classList.remove("hidden");
                     document.getElementById("list-toolbar").classList.remove("hidden");
