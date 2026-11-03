@@ -13,6 +13,7 @@ from urllib.parse import urlparse, unquote
 
 from export_data import ExportError
 from download_cache import DownloadCache, file_hash, MAX_DOWNLOAD_BYTES
+from browser_runtime import find_browser
 
 EXPORT_URL = "https://accountscenter.instagram.com/info_and_permissions/dyi/"
 
@@ -266,10 +267,14 @@ class BrowserExporter:
         launched = False
         try:
             with sync_playwright() as playwright:
-                # Use installed Chrome when present; otherwise playwright install chromium.
+                runtime = find_browser()
+                if runtime is None:
+                    raise ExportBrowserUnavailable("자동 내보내기용 브라우저가 없습니다. 설치 상태를 확인하거나 파일을 직접 가져오세요.")
                 options = {"headless": True}
-                if Path("/Applications/Google Chrome.app").exists():
-                    options["channel"] = "chrome"
+                if runtime["kind"] == "chrome":
+                    options["executable_path"] = runtime["executable"]
+                else:
+                    options["channel"] = "chromium"
                 browser = playwright.chromium.launch(**options)
                 launched = True
                 try:

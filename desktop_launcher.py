@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 import urllib.request
+from setup_check import check_setup
 
 ROOT = Path(__file__).resolve().parent
 URL = "http://127.0.0.1:18765"
@@ -80,6 +81,10 @@ def launch():
             if action != "화면 열기":
                 return
         else:
+            setup = check_setup()
+            if not setup["local_ready"]:
+                problems = [message["text"] for message in setup["messages"] if message["level"] == "error"]
+                raise RuntimeError("실행 환경을 확인해주세요.\n" + "\n".join(problems) + "\n프로젝트 폴더에서 python3 setup_check.py로 상세 내용을 확인할 수 있습니다.")
             with socket.socket() as probe:
                 probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 try:

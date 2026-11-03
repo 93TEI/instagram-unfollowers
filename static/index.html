@@ -306,6 +306,11 @@
                     <button id="management-execute" onclick="doManage()" disabled>확인한 범위 삭제</button>
                 </div>
             </details>
+            <details id="setup-check" class="info" style="text-align:left">
+                <summary>설치 상태 확인</summary>
+                <button id="setup-run" onclick="checkSetup()">계정 접속 없이 설치 점검</button>
+                <div id="setup-result" aria-live="polite"></div>
+            </details>
         </div>
         <div id="list-view" class="hidden list-view">
             <button class="back-btn" onclick="goBack()">&larr; 돌아가기</button>
@@ -345,6 +350,7 @@
         let operationPending = false;
         let isLoggedIn = false;
         let managementPlan = null;
+        let setupChecking = false;
         let fetchedUsers = [];
 
         function showView(view) {
@@ -368,7 +374,7 @@
                 check_export: ["JSON 준비 확인", doRefresh],
                 retry_preparation: ["제출 전 준비 복구", () => doRecover("retry_preparation")],
                 recover_record: ["작업 기록 보관·복구", () => doRecover("recover_record")],
-                setup: ["설치 안내", () => showError(id, "자동 내보내기용 브라우저 설치 상태를 확인해주세요. ZIP·JSON 가져오기는 브라우저 자동화 없이 이용할 수 있습니다.")],
+                setup: ["설치 상태 확인", () => { showView(loggedinView); document.getElementById("setup-check").open = true; checkSetup(); }],
             };
             for (const action of Array.isArray(data.actions) ? data.actions : []) {
                 if (!actions[action]) continue;
@@ -389,6 +395,28 @@
                 await updateStatus();
             } catch (_) { showError("fetch-error", "작업 기록을 복구하지 못했습니다. 기존 자료는 보존했습니다."); }
             finally { setPending(false); }
+        }
+        async function checkSetup() {
+            if (setupChecking || operationPending) return;
+            setupChecking = true;
+            const button = document.getElementById("setup-run"); button.disabled = true;
+            const root = document.getElementById("setup-result"); root.textContent = "설치 상태 확인 중...";
+            try {
+                const data = await api("/api/setup"); root.replaceChildren();
+                const status = document.createElement("p");
+                status.textContent = "로컬 파일 비교: " + (data.local_ready ? "준비됨" : "설치 확인 필요")
+                    + " · 자동 내보내기 실행 환경: " + (data.auto_export_environment_ready ? "준비됨" : "추가 확인 필요") + " · 실제 계정 연동 미검증";
+                root.appendChild(status);
+                for (const message of data.messages || []) { const line = document.createElement("p"); line.textContent = message.text; root.appendChild(line); }
+                const mismatches = (data.packages || []).filter(item => !item.ok);
+                if (mismatches.length) {
+                    const details = document.createElement("details"); const summary = document.createElement("summary");
+                    summary.textContent = "설치 버전 확인이 필요한 패키지"; details.appendChild(summary);
+                    for (const item of mismatches) { const line = document.createElement("p"); line.textContent = `${item.name}: ${item.installed || "미설치"} / 필요 ${item.expected}`; details.appendChild(line); }
+                    root.appendChild(details);
+                }
+            } catch (_) { root.textContent = "설치 상태를 확인하지 못했습니다. 프로젝트 폴더에서 setup_check.py로 확인해주세요."; }
+            finally { setupChecking = false; button.disabled = false; }
         }
 
         function savedText(data) {

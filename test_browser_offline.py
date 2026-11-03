@@ -14,6 +14,7 @@ import pytest
 from playwright.sync_api import sync_playwright
 
 from export_browser import EXPORT_URL, ExportPage, ExportUIError
+from browser_runtime import find_browser
 
 pytestmark = pytest.mark.skipif(os.environ.get("RUN_OFFLINE_BROWSER_TESTS") != "1", reason="offline browser checks are opt-in")
 
@@ -21,7 +22,11 @@ pytestmark = pytest.mark.skipif(os.environ.get("RUN_OFFLINE_BROWSER_TESTS") != "
 @pytest.fixture
 def browser():
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="chrome", headless=True,
+        runtime = find_browser()
+        if runtime is None:
+            pytest.fail('모의 브라우저 검증에 필요한 Chrome 또는 Chromium을 설치해주세요.')
+        options = {"executable_path":runtime["executable"]} if runtime["kind"] == "chrome" else {"channel":"chromium"}
+        browser = p.chromium.launch(**options, headless=True,
                                     args=["--host-resolver-rules=MAP * ~NOTFOUND"])
         yield browser
         browser.close()
@@ -420,4 +425,19 @@ def test_clipboard_failure_provides_selected_manual_copy_text(browser):
     assert area.input_value() == 'alice\nzoe'
     assert '직접 복사' in page.locator('#result-message').inner_text()
     assert len(calls) == 3
+    context.close()
+
+
+def test_setup_check_is_explicit_and_does_not_contact_instagram(browser):
+    context,page,calls = offline_app(browser, {
+        '/api/status':{'logged_in':False,'data':{'source':'local','sources':[]}},
+        '/api/setup':{'status':'ok','local_ready':True,'auto_export_environment_ready':False,
+                      'packages':[], 'messages':[{'level':'warning','text':'자동 내보내기 브라우저 추가 확인 필요'}]}})
+    assert not any(path == '/api/setup' for path,method in calls)
+    page.locator('#setup-check summary').click()
+    page.get_by_role('button',name='계정 접속 없이 설치 점검').click()
+    page.get_by_text('자동 내보내기 브라우저 추가 확인 필요',exact=True).wait_for()
+    text = page.locator('#setup-result').inner_text()
+    assert '로컬 파일 비교: 준비됨' in text and '실제 계정 연동 미검증' in text
+    assert [path for path,method in calls] == ['/','/api/status','/api/setup']
     context.close()

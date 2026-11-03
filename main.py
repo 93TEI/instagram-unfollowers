@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+from pathlib import Path
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -19,6 +20,9 @@ import data_library
 import data_management
 from export_data import ExportError, error_result
 from file_import import UploadLimitMiddleware, import_files
+from setup_check import check_setup
+
+ROOT = Path(__file__).resolve().parent
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,7 +43,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(UploadLimitMiddleware)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 
 
 @app.get("/api/health")
@@ -73,7 +77,12 @@ class ManagementRequest(BaseModel):
 
 @app.get("/")
 async def index():
-    return FileResponse("static/index.html")
+    return FileResponse(ROOT / "static/index.html")
+
+
+@app.get("/api/setup")
+async def api_setup():
+    return await asyncio.to_thread(check_setup)
 
 
 @app.post("/api/login")
