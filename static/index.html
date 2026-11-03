@@ -322,6 +322,18 @@
                 <p id="list-snapshot-info" class="info"></p>
                 <details id="list-validation" class="info hidden" style="text-align:left"></details>
                 <div class="user-list" id="list-user-list"></div>
+                <p id="filtered-count" class="info" aria-live="polite"></p>
+                <div id="result-actions" class="hidden">
+                    <label for="result-scope">복사·저장 범위</label>
+                    <select id="result-scope" onchange="updateResultActions()" style="width:100%;padding:8px">
+                        <option value="filtered">검색 결과</option><option value="all">전체 결과</option>
+                    </select>
+                    <button id="copy-users" onclick="copyUsers()">아이디 복사</button>
+                    <button id="save-txt" onclick="saveUsers('txt')">TXT 저장</button>
+                    <button id="save-csv" onclick="saveUsers('csv')">CSV 저장</button>
+                    <p id="result-message" class="info" role="status"></p>
+                    <textarea id="copy-fallback" class="hidden" readonly aria-label="직접 복사할 아이디" style="width:100%;height:100px"></textarea>
+                </div>
             </div>
         </div>
     </div>
@@ -471,6 +483,7 @@
             document.querySelectorAll("[data-manage]").forEach(button => button.disabled = value);
             document.getElementById("management-confirm").disabled = value;
             updateManagementConfirm();
+            updateResultActions();
         }
         function clearManagement() {
             managementPlan = null;
@@ -660,12 +673,61 @@
                 row.textContent = "@" + user.username;
                 list.appendChild(row);
             }
+            filterList();
+        }
+        function filteredUsers() {
+            const query = document.getElementById("search-input").value.trim().toLowerCase().replace(/^@/, "");
+            return fetchedUsers.filter(user => user.username.toLowerCase().includes(query));
+        }
+        function selectedUsers() {
+            return document.getElementById("result-scope").value === "all" ? fetchedUsers : filteredUsers();
+        }
+        function updateResultActions() {
+            const count = selectedUsers().length;
+            ["copy-users", "save-txt", "save-csv"].forEach(id => document.getElementById(id).disabled = operationPending || count === 0);
+            document.getElementById("result-scope").disabled = operationPending;
+            document.getElementById("copy-users").textContent = `아이디 복사 (${count}명)`;
+            document.getElementById("result-message").textContent = "";
+            document.getElementById("copy-fallback").classList.add("hidden");
+            document.getElementById("copy-fallback").value = "";
+        }
+        async function copyUsers() {
+            if (operationPending) return;
+            const users = selectedUsers();
+            if (!users.length) return;
+            const text = users.map(user => user.username).join("\n");
+            try {
+                await navigator.clipboard.writeText(text);
+                document.getElementById("result-message").textContent = `${users.length}명의 아이디를 복사했습니다.`;
+            } catch (_) {
+                const area = document.getElementById("copy-fallback");
+                area.value = text; area.classList.remove("hidden"); area.focus(); area.select();
+                document.getElementById("result-message").textContent = "자동 복사를 사용할 수 없습니다. 선택된 텍스트를 직접 복사해주세요.";
+            }
+        }
+        function saveUsers(format) {
+            if (operationPending) return;
+            const users = selectedUsers();
+            if (!users.length) return;
+            const names = users.map(user => user.username);
+            const text = format === "csv" ? "\ufeffusername\r\n" + names.map(name => '"' + name.replaceAll('"', '""') + '"').join("\r\n") + "\r\n"
+                : names.join("\n") + "\n";
+            const blob = new Blob([text], {type: format === "csv" ? "text/csv;charset=utf-8" : "text/plain;charset=utf-8"});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            const now = new Date();
+            const date = [now.getFullYear(), String(now.getMonth()+1).padStart(2,"0"), String(now.getDate()).padStart(2,"0")].join("-");
+            link.href = url; link.download = `instagram-non-followers-${document.getElementById("result-scope").value}-${date}.${format}`;
+            link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+            document.getElementById("result-message").textContent = `${users.length}명의 아이디를 ${format.toUpperCase()}로 저장했습니다.`;
         }
         function filterList() {
             const query = document.getElementById("search-input").value.trim().toLowerCase().replace(/^@/, "");
             document.querySelectorAll("#list-user-list .user-item").forEach(row => {
                 row.classList.toggle("hidden", !row.dataset.username.toLowerCase().includes(query));
             });
+            document.getElementById("filtered-count").textContent = `검색 결과 ${filteredUsers().length}명 / 전체 ${fetchedUsers.length}명`;
+            updateResultActions();
         }
         async function doFetch() {
             if (operationPending) return;
@@ -676,6 +738,8 @@
             document.getElementById("list-toolbar").classList.add("hidden");
             document.getElementById("list-progress").classList.remove("hidden");
             document.getElementById("search-input").value = "";
+            document.getElementById("result-actions").classList.add("hidden");
+            document.getElementById("result-scope").value = "filtered";
             fetchedUsers = [];
             document.getElementById("list-user-list").replaceChildren();
             try {
@@ -688,6 +752,7 @@
                     renderValidation("list-validation", data);
                     document.getElementById("list-result").classList.remove("hidden");
                     document.getElementById("list-toolbar").classList.remove("hidden");
+                    document.getElementById("result-actions").classList.remove("hidden");
                 } else if (data.status === "login_required") {
                     showView(loginView);
                     showError("login-error", data.message);

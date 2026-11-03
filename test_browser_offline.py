@@ -359,3 +359,65 @@ def test_download_resume_skips_completed_identity_after_screen_order_changes(bro
     with zipfile.ZipFile(paths[1]) as z:
         assert z.read('part.txt') == b'B'
     context.close()
+
+
+def result_app(browser):
+    context, page, calls = offline_app(browser, {
+        '/api/status':{'logged_in':False,'data':{'source':'local','sources':[{'id':'local','label':'가져온 파일'}]}},
+        '/api/fetch':{'status':'ok','count':2,'users':[{'username':'alice'},{'username':'zoe'}], 'saved_at':123}})
+    page.get_by_role('button', name='맞팔 안한 목록').click()
+    page.get_by_text('맞팔이 아닌 유저: 2명').wait_for()
+    page.wait_for_function('!operationPending')
+    return context,page,calls
+
+
+def test_copy_respects_search_and_all_scope_without_network_requests(browser):
+    context,page,calls = result_app(browser)
+    page.evaluate("Object.defineProperty(navigator, 'clipboard', {value:{writeText: async text => {window.copied = text}}, configurable:true})")
+    page.get_by_placeholder('아이디 검색').fill('@ZOE')
+    assert page.locator('#filtered-count').inner_text() == '검색 결과 1명 / 전체 2명'
+    page.get_by_role('button',name='아이디 복사 (1명)',exact=True).click()
+    page.wait_for_function("window.copied === 'zoe'")
+    page.get_by_placeholder('아이디 검색').fill('missing')
+    assert page.locator('#copy-users').is_disabled()
+    assert page.locator('#save-txt').is_disabled()
+    page.locator('#result-scope').select_option('all')
+    page.get_by_role('button',name='아이디 복사 (2명)',exact=True).click()
+    page.wait_for_function("window.copied === 'alice\\nzoe'")
+    assert calls == [('/', 'GET'),('/api/status','GET'),('/api/fetch','POST')]
+    context.close()
+
+
+def test_download_results_as_txt_and_csv_in_selected_scope(browser,tmp_path):
+    context,page,calls = result_app(browser)
+    page.get_by_placeholder('아이디 검색').fill('zoe')
+    with page.expect_download() as event:
+        page.get_by_role('button',name='TXT 저장',exact=True).click()
+    text = event.value
+    text_path = tmp_path / 'result.txt'
+    text.save_as(text_path)
+    assert text_path.read_text() == 'zoe\n'
+    assert '-filtered-' in text.suggested_filename
+    page.locator('#result-scope').select_option('all')
+    with page.expect_download() as event:
+        page.get_by_role('button',name='CSV 저장',exact=True).click()
+    csv = event.value
+    csv_path = tmp_path / 'result.csv'
+    csv.save_as(csv_path)
+    assert csv_path.read_bytes().startswith(b'\xef\xbb\xbf')
+    assert csv_path.read_text(encoding='utf-8-sig').splitlines() == ['username','"alice"','"zoe"']
+    assert '-all-' in csv.suggested_filename
+    assert len(calls) == 3
+    context.close()
+
+
+def test_clipboard_failure_provides_selected_manual_copy_text(browser):
+    context,page,calls = result_app(browser)
+    page.evaluate("Object.defineProperty(navigator, 'clipboard', {value:{writeText: async () => {throw Error('denied')}}, configurable:true})")
+    page.get_by_role('button',name='아이디 복사 (2명)',exact=True).click()
+    area = page.get_by_role('textbox',name='직접 복사할 아이디')
+    area.wait_for(state='visible')
+    assert area.input_value() == 'alice\nzoe'
+    assert '직접 복사' in page.locator('#result-message').inner_text()
+    assert len(calls) == 3
+    context.close()
