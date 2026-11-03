@@ -5,16 +5,16 @@ before submitting, and stop if the UI no longer matches.
 """
 
 import hashlib
-import json
 import re
+import os
 from contextlib import contextmanager
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
-from export_data import ExportError, atomic_json
+from export_data import ExportError
+from download_cache import DownloadCache, file_hash, MAX_DOWNLOAD_BYTES
 
 EXPORT_URL = "https://accountscenter.instagram.com/info_and_permissions/dyi/"
-MAX_DOWNLOAD_BYTES = 512 * 1024 * 1024
 
 
 class ExportUIError(ExportError):
@@ -211,43 +211,44 @@ class ExportPage:
         controls = buttons.or_(links).filter(visible=True)
         if not controls.count() or controls.count() > 100:
             raise ExportUIError("다운로드할 파일 목록을 확인할 수 없습니다.")
-        manifest_path = Path(destination) / "transfer.json"
-        manifest = {"export": export_key, "count": controls.count(), "parts": {}}
-        if manifest_path.exists():
-            try:
-                manifest = json.loads(manifest_path.read_text())
-                if manifest["export"] != export_key or manifest["count"] != controls.count() or not isinstance(manifest["parts"], dict):
-                    raise ValueError()
-            except (ValueError, KeyError, TypeError):
-                raise ExportUIError("이전 다운로드와 현재 내보내기가 일치하지 않습니다. 파일을 섞지 않고 중단했습니다.") from None
-        paths = []
-        for index, control in enumerate(controls.all()):
-            path = Path(destination) / f"part-{index + 1}.zip"
-            if path.name in manifest["parts"]:
-                if not path.exists() or file_hash(path) != manifest["parts"][path.name]:
-                    raise ExportUIError("이미 받은 파일이 변경되거나 없어졌습니다. 자동으로 다시 다운로드하지 않습니다.")
-                paths.append(path)
+        controls = controls.all()
+        identities = [self.file_identity(control) for control in controls]
+        cache = DownloadCache(destination, export_key, identities)
+        for key, control in zip(cache.keys, controls):
+            if cache.existing(key) is not None:
                 continue
+            path = cache.begin(key)
             with self.page.expect_download(timeout=120000) as event:
                 control.click()
             download = event.value
-            download.save_as(path)
-            path.chmod(0o600)
-            if path.stat().st_size > MAX_DOWNLOAD_BYTES:
-                raise ExportUIError("내보내기 파일이 너무 큽니다. 팔로워·팔로잉만 포함한 내보내기를 사용하세요.")
-            manifest["parts"][path.name] = file_hash(path)
-            atomic_json(manifest_path, manifest)
-            paths.append(path)
+            temporary = path.with_suffix(".zip.partial")
+            download.save_as(temporary)
+            temporary.chmod(0o600)
+            if temporary.stat().st_size > MAX_DOWNLOAD_BYTES:
+                raise ExportDownloadError("내보내기 파일이 너무 큽니다. 팔로워·팔로잉만 포함한 파일을 사용하세요.")
+            os.replace(temporary, path)
+            cache.complete(key)
+        paths = cache.paths()
         on_download(paths)
         return paths
 
 
-def file_hash(path):
-    digest = hashlib.sha256()
-    with Path(path).open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    @staticmethod
+    def file_identity(control):
+        explicit = control.get_attribute("data-file-id")
+        if explicit:
+            return "id:" + explicit
+        name = control.get_attribute("download")
+        if name and name.lower().endswith(".zip"):
+            return "filename:" + name
+        href = control.get_attribute("href")
+        if href:
+            name = unquote(urlparse(href).path).rsplit("/", 1)[-1]
+            if name.lower().endswith(".zip"):
+                return "filename:" + name
+        text = control.evaluate("e => (e.closest('[role=row],[role=listitem],tr,li') || e).textContent")
+        names = re.findall(r"[\w.-]+\.zip", text or "", re.I)
+        return "filename:" + names[0] if len(names) == 1 else None
 
 
 class BrowserExporter:

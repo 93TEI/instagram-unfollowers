@@ -16,7 +16,8 @@ from instagram import try_resume_session, verify_2fa as ig_verify_2fa
 from state import app_state, try_start_job, finish_job
 import instagram
 import data_library
-from export_data import ExportError
+import data_management
+from export_data import ExportError, error_result
 from file_import import UploadLimitMiddleware, import_files
 
 logging.basicConfig(level=logging.INFO)
@@ -61,6 +62,13 @@ class SourceRequest(BaseModel):
 
 class RecoveryRequest(BaseModel):
     action: str
+
+
+class ManagementRequest(BaseModel):
+    source: str
+    mode: str
+    token: str = ""
+    confirmed: bool = False
 
 
 @app.get("/")
@@ -150,3 +158,24 @@ async def api_select_source(req: SourceRequest):
         except (ExportError, OSError) as exc:
             return {"status": "error", "message": str(exc) if isinstance(exc, ExportError) else "자료 선택을 저장하지 못했습니다."}
     return await run_auth(select)
+
+
+async def manage_data(req, execute=False):
+    def manage():
+        try:
+            if execute:
+                return data_management.execute(req.source, req.mode, req.token, req.confirmed)
+            return data_management.preview(req.source, req.mode)
+        except (ExportError, OSError) as exc:
+            return error_result(exc)
+    return await run_auth(manage)
+
+
+@app.post("/api/data/preview")
+async def api_preview_data(req: ManagementRequest):
+    return await manage_data(req)
+
+
+@app.post("/api/data/manage")
+async def api_manage_data(req: ManagementRequest):
+    return await manage_data(req, execute=True)

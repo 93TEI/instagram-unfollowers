@@ -11,6 +11,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 from export_data import ExportError, error_result
+from download_cache import completed_downloads
 
 logger = logging.getLogger(__name__)
 CHECK_INTERVAL = 30 * 60
@@ -93,7 +94,11 @@ def refresh(store, username, provider, now=None):
                 job.update({"phase": "downloaded", "files": [Path(p).name for p in paths]})
                 store.write_state(job)
 
-            paths = provider.download(downloads, on_download, job.get("existing_exports", []))
+            paths = completed_downloads(downloads)
+            if paths:
+                on_download(paths)
+            else:
+                paths = provider.download(downloads, on_download, job.get("existing_exports", []))
             if paths:
                 if job["phase"] != "downloaded":
                     raise ExportError("다운로드 완료 기록을 확인하지 못했습니다.")
@@ -134,7 +139,10 @@ def _download_directory(store, job):
     generation = job.get("generation", "")
     if not isinstance(generation, str) or not re.fullmatch(r"[0-9a-f]{32}", generation):
         raise ExportError("내보내기 작업 식별자를 확인할 수 없습니다.")
-    return store.directory / "downloads" / generation
+    path = store.directory / "downloads" / generation
+    if path.is_symlink() or path.parent.is_symlink():
+        raise ExportError("다운로드 폴더 경로가 변경되었습니다.", code="unsafe_path")
+    return path
 
 
 def recover(store, action):

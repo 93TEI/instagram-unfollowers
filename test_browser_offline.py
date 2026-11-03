@@ -307,3 +307,55 @@ def test_recovery_button_only_repairs_local_record_on_explicit_click(browser):
     assert not page.locator('#export-recovery').is_visible()
     assert not any(path in ('/api/login','/api/export/refresh') for path, method in calls)
     context.close()
+
+
+def test_data_deletion_requires_preview_and_checked_confirmation(browser):
+    deleted = []
+    plan = {'status':'ok','source':'local','mode':'delete_data','token':'test-token',
+            'message':'선택한 자료 삭제','files':[{'path':'snapshots/fake','bytes':10}], 'total_bytes':10, 'preserved':['내보내기 작업 기록']}
+    def manage(route):
+        deleted.append(route.request.post_data_json)
+        return {'status':'ok','message':'자료 삭제 완료'}
+    context, page, calls = offline_app(browser, {
+        '/api/status':{'logged_in':False,'data':{'source':'local','sources':[{'id':'local','label':'가져온 파일'}]}},
+        '/api/data/preview':plan, '/api/data/manage':manage})
+    page.locator('#data-management summary').click()
+    page.get_by_role('button', name='선택한 자료 삭제 범위 확인').click()
+    page.locator('#management-confirm-row').wait_for(state='visible')
+    assert page.get_by_role('button', name='확인한 범위 삭제').is_disabled()
+    assert deleted == []
+    assert 'snapshots/fake' in page.locator('#management-preview').inner_text()
+    page.locator('#management-confirm').check()
+    page.get_by_role('button', name='확인한 범위 삭제').click()
+    page.get_by_text('자료 삭제 완료', exact=True).wait_for()
+    assert deleted == [{'source':'local','mode':'delete_data','token':'test-token','confirmed':True}]
+    context.close()
+
+
+def test_download_resume_skips_completed_identity_after_screen_order_changes(browser, tmp_path):
+    import hashlib
+    from download_cache import DownloadCache
+    card = 'test_account Download today'
+    cache = DownloadCache(tmp_path, hashlib.sha256(card.encode()).hexdigest(), ['id:A', 'id:B'])
+    a = cache.begin(cache.keys[0])
+    with zipfile.ZipFile(a, 'w') as z:
+        z.writestr('part.txt', 'A')
+    cache.complete(cache.keys[0])
+    archive = io.BytesIO()
+    with zipfile.ZipFile(archive, 'w') as z:
+        z.writestr('part.txt', 'B')
+    encoded = base64.b64encode(archive.getvalue()).decode()
+    html = '''<h1>Export your information</h1><button onclick="document.getElementById('files').hidden=false;this.remove()">test_account Download today</button>
+    <div id="files" role="dialog" hidden><button data-file-id="B" onclick="saveFile('B')">Download</button><button data-file-id="A" onclick="saveFile('A')">Download</button></div>
+    <script>window.downloads=[]; function saveFile(id) {
+      downloads.push(id); const a=document.createElement('a');
+      a.href=URL.createObjectURL(new Blob([Uint8Array.from(atob('ENCODED'), c=>c.charCodeAt(0))], {type:'application/zip'}));
+      a.download=id+'.zip';a.click();
+    }</script>'''.replace('ENCODED',encoded)
+    context, page, calls = context_with_page(browser, html)
+    paths = ExportPage(page,'test_account').download(tmp_path,lambda paths:None,[])
+    assert page.evaluate('downloads') == ['B']
+    assert paths[0] == a
+    with zipfile.ZipFile(paths[1]) as z:
+        assert z.read('part.txt') == b'B'
+    context.close()

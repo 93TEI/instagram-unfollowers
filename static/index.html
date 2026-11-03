@@ -296,6 +296,16 @@
                 <p class="info">파일을 여기에 놓아도 됩니다. 한 번의 내보내기에 속한 파일을 모두 선택하세요.</p>
             </div>
             <button id="logout-btn" class="logout-btn" onclick="doLogout()">로그아웃</button>
+            <details id="data-management" class="info" style="text-align:left">
+                <summary>저장 자료 관리</summary>
+                <button data-manage onclick="previewManagement('cleanup')">사용하지 않는 파일 정리 범위 확인</button>
+                <button data-manage onclick="previewManagement('delete_data')">선택한 자료 삭제 범위 확인</button>
+                <div id="management-preview" aria-live="polite"></div>
+                <div id="management-confirm-row" class="hidden">
+                    <label><input type="checkbox" id="management-confirm" onchange="updateManagementConfirm()">위 삭제 범위를 확인했습니다.</label>
+                    <button id="management-execute" onclick="doManage()" disabled>확인한 범위 삭제</button>
+                </div>
+            </details>
         </div>
         <div id="list-view" class="hidden list-view">
             <button class="back-btn" onclick="goBack()">&larr; 돌아가기</button>
@@ -322,6 +332,7 @@
         const listView = document.getElementById("list-view");
         let operationPending = false;
         let isLoggedIn = false;
+        let managementPlan = null;
         let fetchedUsers = [];
 
         function showView(view) {
@@ -440,6 +451,7 @@
         async function selectData(source) {
             if (operationPending) return;
             setPending(true);
+            clearManagement();
             try {
                 const data = await api("/api/data/select", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({source})});
                 if (data.status !== "ok") showFailure("fetch-error", data);
@@ -456,13 +468,57 @@
             document.getElementById("connect-btn").disabled = value;
             document.getElementById("refresh-btn").disabled = value || !isLoggedIn;
             document.querySelectorAll("[data-recovery-action]").forEach(button => button.disabled = value);
+            document.querySelectorAll("[data-manage]").forEach(button => button.disabled = value);
+            document.getElementById("management-confirm").disabled = value;
+            updateManagementConfirm();
+        }
+        function clearManagement() {
+            managementPlan = null;
+            document.getElementById("management-preview").replaceChildren();
+            document.getElementById("management-confirm").checked = false;
+            document.getElementById("management-confirm-row").classList.add("hidden");
+        }
+        function updateManagementConfirm() {
+            document.getElementById("management-execute").disabled = operationPending || !managementPlan || !managementPlan.files.length || !document.getElementById("management-confirm").checked;
+        }
+        async function previewManagement(mode) {
+            if (operationPending) return;
+            clearManagement(); setPending(true); hideError("fetch-error");
+            try {
+                const source = document.getElementById("data-source").value;
+                const data = await api("/api/data/preview", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({source, mode})});
+                if (data.status !== "ok") { showFailure("fetch-error", data); return; }
+                managementPlan = data;
+                const root = document.getElementById("management-preview");
+                const summary = document.createElement("p");
+                summary.textContent = `${data.message} 대상: ${data.files.length}개 / ${(data.total_bytes / 1024 / 1024).toFixed(2)}MB`;
+                root.appendChild(summary);
+                const list = document.createElement("ul");
+                for (const file of data.files) { const item = document.createElement("li"); item.textContent = file.path; list.appendChild(item); }
+                root.appendChild(list);
+                const kept = document.createElement("p"); kept.textContent = "유지: " + data.preserved.join(", "); root.appendChild(kept);
+                document.getElementById("management-confirm-row").classList.toggle("hidden", !data.files.length);
+            } catch (_) { showError("fetch-error", "정리 범위를 확인하지 못했습니다. 파일을 삭제하지 않았습니다."); }
+            finally { setPending(false); }
+        }
+        async function doManage() {
+            if (operationPending || !managementPlan || !document.getElementById("management-confirm").checked) return;
+            const plan = managementPlan; setPending(true);
+            try {
+                const data = await api("/api/data/manage", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({source:plan.source, mode:plan.mode, token:plan.token, confirmed:true})});
+                clearManagement();
+                if (data.status !== "ok") { showFailure("fetch-error", data); return; }
+                fetchedUsers = []; document.getElementById("list-user-list").replaceChildren();
+                await updateStatus(); document.getElementById("management-preview").textContent = data.message;
+            } catch (_) { showError("fetch-error", "정리 결과를 확인하지 못했습니다. 범위를 다시 확인해주세요."); clearManagement(); }
+            finally { setPending(false); }
         }
         async function doImport(files) {
             if (operationPending || !files.length) return;
             if (files.length > 100 || Array.from(files).reduce((n, f) => n + f.size, 0) > 100 * 1024 * 1024) {
                 showError("fetch-error", "파일은 최대 100개, 합계 100MB까지 가져올 수 있습니다."); return;
             }
-            setPending(true);
+            clearManagement(); setPending(true);
             hideError("fetch-error");
             try {
                 const body = new FormData();
