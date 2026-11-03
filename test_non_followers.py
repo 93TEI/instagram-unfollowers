@@ -544,3 +544,77 @@ def test_legacy_saved_time_does_not_become_verified_export_date(store, tmp_path)
     assert result['saved_at'] == metadata['saved_at']
     assert result['imported_at'] is result['exported_at'] is None
     assert result['exported_at_source'] == 'unknown'
+
+
+@pytest.mark.parametrize('error_class, code, action', [
+    ('ExportAuthRequired', 'export_auth_required', 'login'),
+    ('ExportUIError', 'export_ui_changed', 'import'),
+    ('ExportBrowserUnavailable', 'browser_unavailable', 'setup'),
+])
+def test_export_failures_have_distinct_recovery_actions(store, error_class, code, action):
+    import export_browser
+    provider = Provider()
+    provider.request = Mock(side_effect=getattr(export_browser, error_class)('synthetic failure'))
+    result = export_jobs.refresh(store, 'fake', provider, now=100)
+    assert result['code'] == code
+    assert action in result['actions']
+    assert export_jobs.status(store)['code'] == code
+    assert 'retry_preparation' in result['actions']
+
+
+def test_failed_download_cannot_be_reset_into_a_new_submission(store):
+    from export_browser import ExportDownloadError
+    provider = Provider()
+    export_jobs.refresh(store, 'fake', provider, now=100)
+    provider.download = Mock(side_effect=ExportDownloadError('download failed'))
+    result = export_jobs.refresh(store, 'fake', provider, now=1901)
+    assert result['code'] == 'download_failed'
+    before = store.read_state()
+    denied = export_jobs.recover(store, 'retry_preparation')
+    assert denied['code'] == 'resubmit_blocked'
+    assert store.read_state() == before
+    assert provider.requests == 1
+
+
+def test_preparation_recovery_is_local_and_requires_next_explicit_refresh(store):
+    store.write_state({'phase': 'preparing', 'generation': 'a' * 32, 'next_check_at': 9999999999})
+    assert export_jobs.recover(store, 'retry_preparation')['status'] == 'ok'
+    assert store.read_state()['phase'] == 'idle'
+    provider = Provider()
+    export_jobs.refresh(store, 'fake', provider, now=100)
+    assert provider.requests == 1
+
+
+def test_corrupt_job_recovery_preserves_evidence_and_blocks_remote_calls(store, tmp_path):
+    store.import_sources([write_export(tmp_path / 'source')], 'fake')
+    (store.directory / 'job.json').write_text('{broken record')
+    assert export_jobs.recover(store, 'recover_record')['status'] == 'ok'
+    backups = list((store.directory / 'recovery').glob('job-*.json'))
+    assert len(backups) == 1 and backups[0].read_text() == '{broken record'
+    provider = Provider()
+    result = export_jobs.refresh(store, 'fake', provider, now=100)
+    assert result['code'] == 'submission_unknown'
+    assert provider.requests == provider.checks == 0
+    assert store.compare()['count'] == 1
+    assert export_jobs.recover(store, 'retry_preparation')['code'] == 'resubmit_blocked'
+
+
+def test_valid_import_can_repair_metadata_without_touching_job(store, tmp_path):
+    source = write_export(tmp_path / 'source')
+    store.import_sources([source], 'fake')
+    store.write_state({'phase': 'submitted', 'submitted_at': 100})
+    (store.directory / 'current.json').write_text('{bad metadata')
+    assert store.import_sources([source], 'fake')['status'] == 'ok'
+    assert store.compare()['count'] == 1
+    assert store.read_state()['phase'] == 'submitted'
+    backups = list((store.directory / 'recovery').glob('metadata-*.json'))
+    assert len(backups) == 1 and backups[0].read_text() == '{bad metadata'
+
+
+def test_recovery_endpoint_requires_account_and_never_calls_instagram(logged_in, store, monkeypatch):
+    monkeypatch.setattr(instagram, '_client', Mock(side_effect=AssertionError('no account calls')))
+    store.write_state({'phase': 'error'})
+    with TestClient(main.app) as client:
+        assert client.post('/api/export/recover', json={'action':'retry_preparation'}).json()['status'] == 'ok'
+        monkeypatch.setitem(state.app_state, 'logged_in', False)
+        assert client.post('/api/export/recover', json={'action':'recover_record'}).json()['status'] == 'login_required'

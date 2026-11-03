@@ -8,7 +8,7 @@ from starlette.responses import JSONResponse
 from starlette.formparsers import MultiPartException
 from starlette.exceptions import HTTPException
 
-from export_data import ExportError, RELATION_FILE
+from export_data import ExportError, RELATION_FILE, error_result
 from export_jobs import account_lock
 from state import finish_job, try_start_job
 
@@ -91,7 +91,7 @@ async def import_files(request, store, username, on_import=None):
                         return result
                     return await run_in_threadpool(save)
     except ExportError as exc:
-        return {"status": "error", "code": "invalid_export", "message": str(exc)}
+        return error_result(exc)
     except HTTPException as exc:
         if exc.detail == "upload_too_large":
             return JSONResponse({"status": "error", "code": "upload_too_large",

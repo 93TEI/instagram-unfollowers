@@ -2,7 +2,7 @@
 import json
 
 import export_data
-from export_data import ExportError, ExportStore, atomic_json, snapshot_times
+from export_data import ExportError, ExportStore, atomic_json, snapshot_times, error_result
 
 
 def local_store():
@@ -19,7 +19,7 @@ def selected_store():
     except FileNotFoundError:
         return local_store()
     except (ValueError, UnicodeError) as exc:
-        raise ExportError("선택한 자료의 기록이 손상되었습니다. 자료를 다시 선택해주세요.") from exc
+        raise ExportError("선택한 자료의 기록이 손상되었습니다. 자료를 다시 선택해주세요.", code="source_record_invalid", actions=("choose_source", "import")) from exc
 
 
 def select_source(source, require_data=True):
@@ -55,5 +55,4 @@ def status():
                 "followers_count": metadata.get("followers_count") if metadata else None,
                 "validation": metadata.get("validation") if metadata else None}
     except (ExportError, OSError) as exc:
-        return {"source": None, "sources": items, "has_data": False,
-                "message": str(exc) if isinstance(exc, ExportError) else "자료 기록을 읽을 수 없습니다."}
+        return {"source": None, "sources": items, "has_data": False, **error_result(exc)}

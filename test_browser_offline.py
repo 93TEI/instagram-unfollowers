@@ -279,3 +279,31 @@ def test_export_and_import_times_are_distinct_and_unknown_is_explicit(browser):
     assert '기존 파일 저장 기록:' in legacy
     assert '내보내기 생성 시각: 미확인' in legacy
     context.close()
+
+
+def test_auth_error_guides_login_without_automatic_requests(browser):
+    context, page, calls = offline_app(browser, {'/api/status': {
+        'logged_in': True, 'username':'fake',
+        'export': {'phase':'error', 'code':'export_auth_required', 'message':'추가 인증 필요', 'actions':['login','import','compare']}}})
+    page.locator('#export-recovery').get_by_role('button', name='자동 내보내기 계정 연결').click()
+    assert page.locator('#login-view').is_visible()
+    assert not any(method == 'POST' for path, method in calls)
+    context.close()
+
+
+def test_recovery_button_only_repairs_local_record_on_explicit_click(browser):
+    recovered = []
+    def status(route):
+        exp = {'phase':'idle'} if recovered else {
+            'phase':'error', 'code':'export_ui_changed', 'message':'화면 변경', 'actions':['retry_preparation','import']}
+        return {'logged_in':True, 'username':'fake', 'export':exp}
+    def recover(route):
+        recovered.append(route.request.post_data_json)
+        return {'status':'ok'}
+    context, page, calls = offline_app(browser, {'/api/status':status, '/api/export/recover':recover})
+    page.get_by_role('button', name='제출 전 준비 복구').click()
+    page.wait_for_function('!operationPending')
+    assert recovered == [{'action':'retry_preparation'}]
+    assert not page.locator('#export-recovery').is_visible()
+    assert not any(path in ('/api/login','/api/export/refresh') for path, method in calls)
+    context.close()

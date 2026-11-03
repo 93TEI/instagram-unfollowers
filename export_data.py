@@ -9,6 +9,7 @@ import shutil
 import tempfile
 import time
 import zipfile
+import uuid
 from pathlib import Path, PurePosixPath
 from datetime import datetime
 from urllib.parse import unquote, urlparse
@@ -21,7 +22,20 @@ COMPLETENESS_NOTE = "마지막 분할 파일 누락, 전체 기간 및 동일 �
 
 
 class ExportError(ValueError):
-    pass
+    code = "invalid_export"
+    actions = ("import", "compare")
+
+    def __init__(self, message, *, code=None, actions=None):
+        super().__init__(message)
+        self.code = code or type(self).code
+        self.actions = tuple(actions) if actions is not None else type(self).actions
+
+
+def error_result(exc):
+    if isinstance(exc, ExportError):
+        return {"status": "error", "code": exc.code, "message": str(exc), "actions": list(exc.actions)}
+    return {"status": "error", "code": "storage_error", "message": "자료를 읽거나 저장하지 못했습니다. 기존 파일을 보존하고 중단했습니다.",
+            "actions": ["import", "choose_source"]}
 
 
 def parse_export_date(value):
@@ -38,7 +52,7 @@ def parse_export_date(value):
             raise ValueError()
         return timestamp
     except (ValueError, OverflowError) as exc:
-        raise ExportError("내보내기 생성 시각을 확인해주세요. 시간대가 포함된 날짜여야 하며 미래 시각은 사용할 수 없습니다.") from exc
+        raise ExportError("내보내기 생성 시각을 확인해주세요. 시간대가 포함된 날짜여야 하며 미래 시각은 사용할 수 없습니다.", code="invalid_date", actions=("import",)) from exc
 
 
 def snapshot_times(metadata):
@@ -105,7 +119,7 @@ def _validate_files(files):
     for relation in ("followers", "following"):
         names = [name for name in files if RELATION_FILE.fullmatch(name).group(1) == relation]
         if not names:
-            raise ExportError(f"{relation} JSON 파일이 없습니다. 팔로워와 팔로잉을 함께 내보내세요.")
+            raise ExportError(f"{relation} JSON 파일이 없습니다. 팔로워와 팔로잉을 함께 내보내세요.", code="missing_files")
         numbers = [RELATION_FILE.fullmatch(name).group(2) for name in names]
         if None in numbers:
             if len(numbers) != 1:
@@ -113,7 +127,7 @@ def _validate_files(files):
         else:
             numbers = sorted(int(n) for n in numbers)
             if numbers != list(range(1, len(numbers) + 1)):
-                raise ExportError(f"{relation} 분할 파일이 누락되었습니다. 모든 파일을 함께 가져오세요.")
+                raise ExportError(f"{relation} 분할 파일이 누락되었습니다. 모든 파일을 함께 가져오세요.", code="missing_files")
 
 
 def compare_files(files):
@@ -125,7 +139,7 @@ def compare_files(files):
         try:
             data = json.loads(content.decode("utf-8-sig"))
         except (ValueError, UnicodeError) as exc:
-            raise ExportError(f"{name} 파일을 JSON으로 읽을 수 없습니다.") from exc
+            raise ExportError(f"{name} 파일을 JSON으로 읽을 수 없습니다.", code="invalid_json") from exc
         names = parse_usernames(data, relation)
         groups[relation].update(names)
         rows = data.get("relationships_" + relation) if isinstance(data, dict) else data
@@ -213,7 +227,7 @@ class ExportStore:
             return {"phase": "idle"}
         except (ValueError, UnicodeError) as exc:
             # Never silently reset a corrupt request marker and submit twice.
-            raise ExportError("내보내기 작업 기록을 읽을 수 없습니다. 중복 요청을 막기 위해 중단했습니다.") from exc
+            raise ExportError("내보내기 작업 기록을 읽을 수 없습니다. 중복 요청을 막기 위해 중단했습니다.", code="job_record_invalid", actions=("recover_record", "import", "compare")) from exc
 
     def write_state(self, data):
         atomic_json(self.directory / "job.json", data)
@@ -245,7 +259,17 @@ class ExportStore:
                     "exported_at": export_date, "exported_at_source": "user" if export_date is not None else "unknown", "username": username,
                     "files": sorted(files), "following_count": result["following_count"],
                     "followers_count": result["followers_count"], "validation": result["validation"]}
-        previous = self.metadata()
+        try:
+            previous = self.metadata()
+        except ExportError:
+            # A validated new import may repair metadata, never the export job.
+            # Preserve the old record and all snapshots for later inspection.
+            recovery = self.directory / "recovery"
+            recovery.mkdir(exist_ok=True, mode=0o700)
+            backup = recovery / ("metadata-" + uuid.uuid4().hex + ".json")
+            shutil.copyfile(self.directory / "current.json", backup)
+            backup.chmod(0o600)
+            previous = None
         if previous and previous.get("snapshot") == snapshot:
             metadata["saved_at"] = previous["saved_at"]
         atomic_json(self.directory / "current.json", metadata)
@@ -269,12 +293,12 @@ class ExportStore:
         except FileNotFoundError:
             return None
         except (ValueError, UnicodeError) as exc:
-            raise ExportError("저장된 JSON의 정보를 읽을 수 없습니다.") from exc
+            raise ExportError("저장된 JSON의 정보를 읽을 수 없습니다.", code="data_record_invalid") from exc
 
     def compare(self):
         metadata = self.metadata()
         if metadata is None:
-            return {"status": "no_data", "message": "저장된 JSON이 없습니다. ZIP·JSON 가져오기로 파일을 선택하세요."}
+            return {"status": "no_data", "code": "no_data", "actions": ["import", "choose_source"], "message": "저장된 JSON이 없습니다. ZIP·JSON 가져오기로 파일을 선택하세요."}
         directory = self.directory / "snapshots" / metadata["snapshot"]
         try:
             files = read_sources([directory])

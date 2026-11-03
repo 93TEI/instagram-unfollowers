@@ -18,11 +18,23 @@ MAX_DOWNLOAD_BYTES = 512 * 1024 * 1024
 
 
 class ExportUIError(ExportError):
-    pass
+    code = "export_ui_changed"
+    actions = ("import", "compare")
 
 
 class ExportAuthRequired(ExportUIError):
-    pass
+    code = "export_auth_required"
+    actions = ("login", "import", "compare")
+
+
+class ExportDownloadError(ExportUIError):
+    code = "download_failed"
+    actions = ("check_export", "import", "compare")
+
+
+class ExportBrowserUnavailable(ExportUIError):
+    code = "browser_unavailable"
+    actions = ("setup", "import")
 
 
 def label(*names):
@@ -246,7 +258,11 @@ class BrowserExporter:
     def page(self):
         if not self.sessionid:
             raise ExportAuthRequired("내보내기에 사용할 세션이 없습니다. 다시 로그인해주세요.")
-        from playwright.sync_api import sync_playwright, Error
+        try:
+            from playwright.sync_api import sync_playwright, Error
+        except ImportError:
+            raise ExportBrowserUnavailable("자동 내보내기에 필요한 브라우저 도구가 설치되지 않았습니다. 파일 가져오기는 계속 사용할 수 있습니다.") from None
+        launched = False
         try:
             with sync_playwright() as playwright:
                 # Use installed Chrome when present; otherwise playwright install chromium.
@@ -254,6 +270,7 @@ class BrowserExporter:
                 if Path("/Applications/Google Chrome.app").exists():
                     options["channel"] = "chrome"
                 browser = playwright.chromium.launch(**options)
+                launched = True
                 try:
                     context = browser.new_context(locale="en-US", accept_downloads=True, service_workers="block")
                     context.add_cookies([{"name": "sessionid", "value": self.sessionid,
@@ -268,12 +285,21 @@ class BrowserExporter:
             raise
         except Error:
             # Playwright errors can contain authenticated URLs. Do not expose them.
-            raise ExportUIError("내보내기 화면을 처리하지 못했습니다. 화면 변경·추가 인증·브라우저 설치 상태를 확인하세요. 요청은 자동 반복하지 않습니다.") from None
+            if not launched:
+                raise ExportBrowserUnavailable("내보내기용 브라우저를 실행하지 못했습니다. 설치 상태를 확인해주세요.") from None
+            raise ExportUIError("내보내기 화면을 처리하지 못했습니다. 화면 변경 또는 추가 인증을 확인하세요. 요청은 자동 반복하지 않습니다.") from None
 
     def request(self, before_submit):
         with self.page() as page:
             page.request(before_submit)
 
     def download(self, destination, on_download, existing_exports):
-        with self.page() as page:
-            return page.download(destination, on_download, existing_exports)
+        try:
+            from playwright.sync_api import Error
+            with self.page() as page:
+                try:
+                    return page.download(destination, on_download, existing_exports)
+                except Error:
+                    raise ExportDownloadError("다운로드를 완료하지 못했습니다. 받은 파일은 보존했습니다. 나중에 준비 확인을 누르거나 파일을 직접 가져오세요.") from None
+        except ImportError:
+            raise ExportBrowserUnavailable("내보내기용 브라우저 도구 설치 상태를 확인해주세요.") from None

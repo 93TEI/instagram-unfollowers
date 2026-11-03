@@ -280,6 +280,7 @@
             <p id="snapshot-info" class="info">저장된 JSON을 확인합니다.</p>
             <details id="data-validation" class="info hidden" style="text-align:left"></details>
             <p id="export-info" class="info" aria-live="polite"></p>
+            <div id="export-recovery" class="error hidden" role="alert"></div>
             <div id="fetch-error" class="error hidden" role="alert"></div>
             <button id="fetch-btn" class="fetch-btn" onclick="doFetch()">맞팔 안한 목록</button>
             <button id="connect-btn" onclick="showView(loginView)">자동 내보내기용 로그인</button>
@@ -333,6 +334,40 @@
             el.classList.remove("hidden");
         }
         function hideError(id) { document.getElementById(id).classList.add("hidden"); }
+        function showFailure(id, data) {
+            showError(id, data.message);
+            const element = document.getElementById(id);
+            const actions = {
+                import: ["파일 다시 가져오기", () => { showView(loggedinView); document.getElementById("import-files").click(); }],
+                compare: ["저장된 자료 비교", doFetch],
+                login: ["자동 내보내기 계정 연결", () => showView(loginView)],
+                choose_source: ["다른 자료 선택", () => { showView(loggedinView); document.getElementById("data-source").focus(); }],
+                check_export: ["JSON 준비 확인", doRefresh],
+                retry_preparation: ["제출 전 준비 복구", () => doRecover("retry_preparation")],
+                recover_record: ["작업 기록 보관·복구", () => doRecover("recover_record")],
+                setup: ["설치 안내", () => showError(id, "자동 내보내기용 브라우저 설치 상태를 확인해주세요. ZIP·JSON 가져오기는 브라우저 자동화 없이 이용할 수 있습니다.")],
+            };
+            for (const action of Array.isArray(data.actions) ? data.actions : []) {
+                if (!actions[action]) continue;
+                const button = document.createElement("button");
+                button.type = "button"; button.dataset.recoveryAction = action;
+                button.textContent = actions[action][0]; button.disabled = operationPending;
+                button.onclick = () => { if (!operationPending) actions[action][1](); };
+                element.appendChild(button);
+            }
+        }
+        async function doRecover(action) {
+            if (operationPending) return;
+            setPending(true);
+            try {
+                const data = await api("/api/export/recover", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action})});
+                if (data.status !== "ok") showFailure("fetch-error", data);
+                else hideError("fetch-error");
+                await updateStatus();
+            } catch (_) { showError("fetch-error", "작업 기록을 복구하지 못했습니다. 기존 자료는 보존했습니다."); }
+            finally { setPending(false); }
+        }
+
         function savedText(data) {
             if (!data.saved_at && !data.imported_at) return "저장된 JSON이 없습니다.";
             const imported = data.imported_at ? "가져온 시각: " + new Date(data.imported_at * 1000).toLocaleString()
@@ -368,6 +403,7 @@
         async function updateStatus() {
             const data = await api("/api/status");
             const exp = data.export || {};
+            if (exp.code) showFailure("export-recovery", exp); else hideError("export-recovery");
             isLoggedIn = Boolean(data.logged_in);
             const local = data.data || {source: "local", sources: [{id: "local", label: "가져온 파일"}], saved_at: exp.saved_at};
             const sources = document.getElementById("data-source");
@@ -377,6 +413,7 @@
                 option.value = source.id; option.textContent = source.label; sources.appendChild(option);
             }
             sources.value = local.source || "";
+            if (local.code) showFailure("fetch-error", local);
             document.getElementById("display-username").textContent = isLoggedIn && data.username ? "@" + data.username : "";
             document.getElementById("connection-status").textContent = isLoggedIn ? "계정 연결됨" : "로컬 파일 비교";
             document.getElementById("connection-check").classList.toggle("hidden", !isLoggedIn);
@@ -405,7 +442,7 @@
             setPending(true);
             try {
                 const data = await api("/api/data/select", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({source})});
-                if (data.status !== "ok") showError("fetch-error", data.message);
+                if (data.status !== "ok") showFailure("fetch-error", data);
                 fetchedUsers = []; document.getElementById("list-user-list").replaceChildren();
                 await updateStatus();
             } catch (_) { showError("fetch-error", "자료를 선택하지 못했습니다."); }
@@ -418,6 +455,7 @@
             document.getElementById("data-source").disabled = value;
             document.getElementById("connect-btn").disabled = value;
             document.getElementById("refresh-btn").disabled = value || !isLoggedIn;
+            document.querySelectorAll("[data-recovery-action]").forEach(button => button.disabled = value);
         }
         async function doImport(files) {
             if (operationPending || !files.length) return;
@@ -433,7 +471,7 @@
                 for (const file of files) body.append("files", file);
                 const response = await fetch("/api/import", {method: "POST", body});
                 const data = await response.json();
-                if (data.status !== "ok") { showError("fetch-error", data.message); return; }
+                if (data.status !== "ok") { showFailure("fetch-error", data); return; }
                 await updateStatus();
                 document.getElementById("exported-at").value = "";
                 document.getElementById("export-info").textContent = "파일을 가져왔습니다. 맞팔 안한 목록을 눌러 확인하세요.";
@@ -543,7 +581,7 @@
             setPending(true);
             try {
                 const data = await api("/api/logout", {method: "POST"});
-                if (data.status !== "ok") { showError("fetch-error", data.message); return; }
+                if (data.status !== "ok") { showFailure("fetch-error", data); return; }
                 fetchedUsers = [];
                 document.getElementById("list-user-list").replaceChildren();
                 document.getElementById("username").value = "";
@@ -597,7 +635,7 @@
                 } else if (data.status === "login_required") {
                     showView(loginView);
                     showError("login-error", data.message);
-                } else { showError("list-error", data.message); }
+                } else { showFailure("list-error", data); }
             } catch (_) { showError("list-error", "JSON 비교 결과를 가져오지 못했습니다."); }
             finally {
                 document.getElementById("list-progress").classList.add("hidden");
@@ -615,7 +653,7 @@
                     showView(loginView);
                     showError("login-error", data.message);
                 } else if (["error", "busy"].includes(data.status)) {
-                    showError("fetch-error", data.message);
+                    showFailure("fetch-error", data);
                 }
                 await updateStatus();
             } catch (_) {

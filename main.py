@@ -59,6 +59,10 @@ class SourceRequest(BaseModel):
     source: str
 
 
+class RecoveryRequest(BaseModel):
+    action: str
+
+
 @app.get("/")
 async def index():
     return FileResponse("static/index.html")
@@ -123,6 +127,11 @@ async def api_logout():
         ig_logout()
         return {"status": "ok"}
     return await run_auth(run)
+
+
+@app.post("/api/export/recover")
+async def api_recover_export(req: RecoveryRequest):
+    return await run_auth(instagram.recover_json_export, req.action)
 
 
 @app.post("/api/import")

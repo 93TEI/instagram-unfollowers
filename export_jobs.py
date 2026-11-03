@@ -6,10 +6,11 @@ import os
 import re
 import time
 import uuid
+import shutil
 from contextlib import contextmanager
 from pathlib import Path
 
-from export_data import ExportError
+from export_data import ExportError, error_result
 
 logger = logging.getLogger(__name__)
 CHECK_INTERVAL = 30 * 60
@@ -38,6 +39,7 @@ def status(store):
     job = store.read_state()
     current = store.metadata()
     return {"phase": job.get("phase", "idle"), "message": job.get("message", ""),
+            "code": job.get("code"), "actions": job.get("actions", []),
             "has_data": current is not None, "saved_at": current.get("saved_at") if current else None,
             "retry_after": max(0, int(job.get("next_check_at", 0) - time.time()) + 1)}
 
@@ -49,8 +51,16 @@ def refresh(store, username, provider, now=None):
         if not locked:
             return {"status": "busy", "message": "내보내기 작업이 진행 중입니다."}
         job = store.read_state()
+        if job.get("remote_blocked"):
+            return {"status": "error", "code": "submission_unknown", "message": job["message"], "actions": ["import", "compare"]}
         if job.get("phase") == "downloaded":
-            return _import_download(store, username, job)
+            try:
+                return _import_download(store, username, job)
+            except (ExportError, OSError) as exc:
+                info = error_result(exc)
+                job.update({key: info[key] for key in ("code", "message", "actions")})
+                store.write_state(job)
+                return info
         remaining = job.get("next_check_at", 0) - now
         if remaining > 0:
             return {"status": "pending", "message": job.get("message") or "같은 요청의 반복을 막기 위해 잠시 기다립니다.",
@@ -99,11 +109,15 @@ def refresh(store, username, provider, now=None):
                 phase = "uncertain"
             else:
                 phase = "error"
-            message = str(exc) if isinstance(exc, ExportError) else "내보내기 처리 중 오류가 발생했습니다. 요청을 자동 반복하지 않습니다."
-            job.update({"phase": phase, "message": message})
+            if not isinstance(exc, (ExportError, OSError)):
+                exc = ExportError("내보내기 처리 중 오류가 발생했습니다. 요청을 자동 반복하지 않습니다.", code="export_failed", actions=("check_export", "import"))
+            info = error_result(exc)
+            if phase == "error":
+                info["actions"] = list(dict.fromkeys(info["actions"] + ["retry_preparation"]))
+            job.update({"phase": phase, **{key: info[key] for key in ("message", "code", "actions")}})
             store.write_state(job)
             logger.warning("export_failed phase=%s error_type=%s", phase, type(exc).__name__)
-            return {"status": "error", "message": message, "retry_after": CHECK_INTERVAL}
+            return {**info, "retry_after": CHECK_INTERVAL}
 
 
 def _import_download(store, username, job):
@@ -121,3 +135,29 @@ def _download_directory(store, job):
     if not isinstance(generation, str) or not re.fullmatch(r"[0-9a-f]{32}", generation):
         raise ExportError("내보내기 작업 식별자를 확인할 수 없습니다.")
     return store.directory / "downloads" / generation
+
+
+def recover(store, action):
+    """Local-only repair. An ambiguous/corrupt submission record is never reset."""
+    with account_lock(store) as locked:
+        if not locked:
+            return {"status": "busy", "message": "내보내기 작업이 진행 중입니다."}
+        try:
+            job = store.read_state()
+        except ExportError as exc:
+            if action != "recover_record" or exc.code != "job_record_invalid":
+                return error_result(exc)
+            directory = store.directory / "recovery"
+            directory.mkdir(exist_ok=True, mode=0o700)
+            backup = directory / ("job-" + uuid.uuid4().hex + ".json")
+            shutil.copyfile(store.directory / "job.json", backup)
+            backup.chmod(0o600)
+            store.write_state({"phase": "uncertain", "remote_blocked": True,
+                               "code": "submission_unknown", "actions": ["import", "compare"],
+                               "message": "손상된 작업 기록을 보관하고 복구했습니다. 제출 여부를 확인할 수 없어 온라인 요청은 막았습니다. 공식 파일을 직접 가져오거나 기존 자료를 비교해주세요."})
+            return {"status": "ok", "message": "기존 기록을 보관했습니다. 로컬 파일 가져오기와 비교를 이용해주세요."}
+        if action == "retry_preparation" and job.get("phase") in ("preparing", "error") and "submitted_at" not in job and not job.get("remote_blocked"):
+            store.write_state({"phase": "idle", "message": "제출 전 준비를 복구했습니다. JSON 갱신을 눌러 다시 시작할 수 있습니다."})
+            return {"status": "ok", "message": "제출 전 준비를 복구했습니다."}
+        return {"status": "error", "code": "resubmit_blocked", "actions": ["import", "compare"],
+                "message": "제출 기록이 있거나 제출 여부가 불명확해 초기화하지 않았습니다. 기존 자료 또는 직접 받은 파일을 사용해주세요."}

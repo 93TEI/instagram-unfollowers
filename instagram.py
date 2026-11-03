@@ -8,8 +8,9 @@ from instagrapi import Client
 from instagrapi.exceptions import BadPassword, ChallengeRequired, TwoFactorRequired
 
 from export_browser import BrowserExporter
-from export_data import ExportError, ExportStore, atomic_json
+from export_data import ExportError, ExportStore, atomic_json, error_result
 from export_jobs import refresh as refresh_export, status as export_status
+from export_jobs import recover as recover_export
 from state import app_state, finish_job, try_start_job
 import data_library
 
@@ -188,8 +189,7 @@ def fetch_non_followers(dry_run=False):
         return result
     except (ExportError, OSError) as exc:
         app_state["non_followers"] = []
-        message = str(exc) if isinstance(exc, ExportError) else "저장된 JSON 파일을 읽을 수 없습니다."
-        return {"status": "error", "message": message}
+        return error_result(exc)
     finally:
         app_state["job_status"] = "idle"
         finish_job()
@@ -211,8 +211,7 @@ def refresh_json_export():
             app_state["non_followers"] = result["users"]
         return result
     except (ExportError, OSError) as exc:
-        message = str(exc) if isinstance(exc, ExportError) else "내보내기 기록을 읽거나 저장할 수 없습니다."
-        return {"status": "error", "message": message}
+        return error_result(exc)
     finally:
         app_state["job_status"] = "idle"
         finish_job()
@@ -223,8 +222,17 @@ def get_export_status():
         return {"phase": "idle", "has_data": False}
     try:
         return export_status(_store())
-    except (ExportError, OSError):
-        return {"phase": "error", "has_data": False, "message": "내보내기 기록을 읽을 수 없습니다."}
+    except (ExportError, OSError) as exc:
+        return {"phase": "error", "has_data": False, **error_result(exc)}
+
+
+def recover_json_export(action):
+    if not app_state["logged_in"]:
+        return {"status": "login_required", "message": "로그인이 필요합니다.", "actions": ["login"]}
+    try:
+        return recover_export(_store(), action)
+    except (ExportError, OSError) as exc:
+        return error_result(exc)
 
 
 def logout():
